@@ -13,19 +13,24 @@ namespace Core.Common
     {
 
         private DbContext dataContext;
-        protected readonly DbSet<T> dbset;
+        private readonly DbSet<T> dbset;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="dataContext"></param>
+         protected BaseRepository(DbContext dataContext)
+        {
+            this.dataContext = dataContext;
+            dbset = DataContext.Set<T>();
+        }
 
         protected DbContext DataContext
         {
             get { return dataContext; }
         }
 
-        protected BaseRepository(DbContext dataContext)
-        {
-            this.dataContext = dataContext;
-            // dataContext.Database.EnsureCreated();
-            dbset = DataContext.Set<T>();
-        }
+        public DbSet<T> DbSet => dbset;
 
         public virtual async Task<T> Add(T entity)
         {
@@ -118,5 +123,7 @@ namespace Core.Common
                 throw e;
             }
         }
+
+
     }
 }
