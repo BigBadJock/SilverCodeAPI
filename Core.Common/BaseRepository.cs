@@ -1,4 +1,6 @@
 ﻿using Core.Common.Contracts;
+using log4net;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -14,6 +16,7 @@ namespace Core.Common
 
         private DbContext dataContext;
         private readonly DbSet<T> dbset;
+        protected readonly ILog log;
 
         /// <summary>
         /// Constructor
@@ -21,6 +24,7 @@ namespace Core.Common
         /// <param name="dataContext"></param>
          protected BaseRepository(DbContext dataContext)
         {
+            log.Info($"Creating Repository {this.GetType().Name}");
             this.dataContext = dataContext;
             dbset = DataContext.Set<T>();
         }
@@ -40,16 +44,19 @@ namespace Core.Common
                 entity.LastUpdated = DateTime.Now;
                 entity.Created = DateTime.Now;
                 T added = dbset.Add(entity);
-                _ = await dataContext.SaveChangesAsync();
+                _ = await dataContext.SaveChangesAsync().ConfigureAwait(false);
+                log.Info($"Repository: {this.GetType().Name} added new entity: {JsonConvert.SerializeObject(added)}");
                 return added;
+            }
+            catch (ArgumentNullException)
+            {
+                log.Error($"Repository: {this.GetType().Name} tried to add a null entity {nameof(entity)}");
+                throw;
             }
             catch (DbUpdateException e)
             {
-                // TODO: Log this
-                // TODO: Audit this
-                System.Diagnostics.Debug.WriteLine(e.Message);
-                if (e.InnerException != null) System.Diagnostics.Debug.WriteLine(e.InnerException.Message);
-                return null;
+                log.Error($"Repository: {this.GetType().Name} failed throwing exception: {e} when trying to add an entity {nameof(entity)} with the value: {JsonConvert.SerializeObject(entity)}", e);
+                throw;
             }
         }
 
@@ -57,17 +64,15 @@ namespace Core.Common
         {
             try
             {
-
                 dbset.Remove(entity);
-                await dataContext.SaveChangesAsync();
+                await dataContext.SaveChangesAsync().ConfigureAwait(false);
+                log.Info($"Repository: {this.GetType().Name} deleted then entity: {JsonConvert.SerializeObject(entity)}");
+
                 return true;
             }
-            catch (Exception e)
+            catch (DbUpdateException e)
             {
-                // TODO: Log this
-                // TODO: Audit this
-                System.Diagnostics.Debug.WriteLine(e.Message);
-                if (e.InnerException != null) System.Diagnostics.Debug.WriteLine(e.InnerException.Message);
+                log.Error($"Repository: {this.GetType().Name} failed throwing exception: {e} when trying to delete an entity : {JsonConvert.SerializeObject(entity)}", e);
                 return false;
             }
 
@@ -81,17 +86,16 @@ namespace Core.Common
                 foreach (T obj in objects)
                 {
                     dbset.Remove(obj);
+                    log.Info($"Repository: {this.GetType().Name} deleting entity: {JsonConvert.SerializeObject(obj)}");
                 }
-                await dataContext.SaveChangesAsync();
+                await dataContext.SaveChangesAsync().ConfigureAwait(false);
+                log.Info($"Repository: {this.GetType().Name} deleting multiple entities successful");
                 return true;
             }
-            catch (Exception e)
+            catch (DbUpdateException e)
             {
-                // TODO: Add Logging instead.
-                // TODO: Audit this
-                System.Diagnostics.Debug.WriteLine(e.Message);
-                if (e.InnerException != null) System.Diagnostics.Debug.WriteLine(e.InnerException.Message);
-                return false;
+                log.Error($"Repository: {this.GetType().Name} failed throwing exception: {e} when trying to deleting multiple entries", e);
+                throw;
             }
         }
 
@@ -102,7 +106,10 @@ namespace Core.Common
 
         public virtual async Task<T> GetById(long id)
         {
-            return await dbset.Where(s => s.Id == id).FirstOrDefaultAsync();
+            T result = await dbset.Where(s => s.Id == id).FirstOrDefaultAsync().ConfigureAwait(false);
+            log.Info($"Repository: {this.GetType().Name} retrieving by Id: {id} value: {JsonConvert.SerializeObject(result)}");
+
+            return result;
         }
 
         public virtual async Task<T> Update(T entity)
@@ -111,16 +118,14 @@ namespace Core.Common
             {
                 dbset.Attach(entity);
                 dataContext.Entry(entity).State = EntityState.Modified;
-                await dataContext.SaveChangesAsync();
+                await dataContext.SaveChangesAsync().ConfigureAwait(false);
+                log.Info($"Repository: {this.GetType().Name} updating entity: {JsonConvert.SerializeObject(entity)}");
                 return entity;
             }
             catch (DbUpdateException e)
             {
-                // TODO: Log this
-                // TODO: Audit this
-                System.Diagnostics.Debug.WriteLine(e.Message);
-                if (e.InnerException != null) System.Diagnostics.Debug.WriteLine(e.InnerException.Message);
-                throw e;
+                log.Error($"Repository: {this.GetType().Name} failed throwing exception: {e} when trying to update entity: {JsonConvert.SerializeObject(entity)}", e);
+                throw;
             }
         }
 
