@@ -1,4 +1,5 @@
-﻿using Core.Common.Contracts;
+﻿using Ardalis.GuardClauses;
+using Core.Common.Contracts;
 using log4net;
 using Newtonsoft.Json;
 using System;
@@ -40,7 +41,7 @@ namespace Core.Common
         {
             try
             {
-                if (entity == null) throw new ArgumentNullException(nameof(entity));
+                Guard.Against.Null(entity, nameof(entity));
                 entity.LastUpdated = DateTime.Now;
                 entity.Created = DateTime.Now;
                 T added = dbset.Add(entity);
@@ -64,6 +65,7 @@ namespace Core.Common
         {
             try
             {
+                Guard.Against.Null(entity, nameof(entity));
                 dbset.Remove(entity);
                 await dataContext.SaveChangesAsync().ConfigureAwait(false);
                 log.Info($"Repository: {this.GetType().Name} deleted then entity: {JsonConvert.SerializeObject(entity)}");
@@ -116,6 +118,7 @@ namespace Core.Common
         {
             try
             {
+                Guard.Against.Null(entity, nameof(entity));
                 dbset.Attach(entity);
                 dataContext.Entry(entity).State = EntityState.Modified;
                 await dataContext.SaveChangesAsync().ConfigureAwait(false);
