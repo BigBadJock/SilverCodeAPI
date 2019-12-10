@@ -1,4 +1,5 @@
-﻿using System;
+﻿using REST_Parser.Models;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -18,6 +19,7 @@ namespace Core.Common.Contracts
         #endregion
 
         IQueryable<T> GetAll();
+        RestResult<T> GetAll(string restQuery);
 
         #region update
         Task<T> Add(T entity);

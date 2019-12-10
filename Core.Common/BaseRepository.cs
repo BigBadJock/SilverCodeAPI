@@ -2,6 +2,8 @@
 using Core.Common.Contracts;
 using log4net;
 using Newtonsoft.Json;
+using REST_Parser;
+using REST_Parser.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -16,6 +18,7 @@ namespace Core.Common
     {
 
         private DbContext dataContext;
+        private readonly IRestToLinqParser<T> restParser;
         private readonly DbSet<T> dbset;
         protected readonly ILog log;
 
@@ -23,10 +26,11 @@ namespace Core.Common
         /// Constructor
         /// </summary>
         /// <param name="dataContext"></param>
-         protected BaseRepository(DbContext dataContext)
+         protected BaseRepository(DbContext dataContext, IRestToLinqParser<T> parser)
         {
             log.Info($"Creating Repository {this.GetType().Name}");
             this.dataContext = dataContext;
+            this.restParser = parser;
             dbset = DataContext.Set<T>();
         }
 
@@ -104,6 +108,13 @@ namespace Core.Common
         public virtual IQueryable<T> GetAll()
         {
             return dbset;
+        }
+
+        public RestResult<T> GetAll(string restQuery)
+        {
+            RestResult<T> result = this.restParser.Run(this.dbset, restQuery);
+
+            return result;
         }
 
         public virtual async Task<T> GetById(long id)
