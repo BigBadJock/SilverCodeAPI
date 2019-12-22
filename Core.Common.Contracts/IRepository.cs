@@ -1,10 +1,8 @@
-﻿using REST_Parser.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using REST_Parser.Models;
 using System;
-using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Core.Common.Contracts

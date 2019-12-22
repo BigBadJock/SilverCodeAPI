@@ -1,13 +1,12 @@
 ﻿using Ardalis.GuardClauses;
 using Core.Common.Contracts;
 using log4net;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using REST_Parser;
 using REST_Parser.Models;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -48,10 +47,10 @@ namespace Core.Common
                 Guard.Against.Null(entity, nameof(entity));
                 entity.LastUpdated = DateTime.Now;
                 entity.Created = DateTime.Now;
-                T added = dbset.Add(entity);
+                var added = dbset.Add(entity);
                 _ = await dataContext.SaveChangesAsync().ConfigureAwait(false);
                 log.Info($"Repository: {this.GetType().Name} added new entity: {JsonConvert.SerializeObject(added)}");
-                return added;
+                return added.Entity;
             }
             catch (ArgumentNullException)
             {
