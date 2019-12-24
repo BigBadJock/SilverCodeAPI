@@ -1,7 +1,7 @@
 ﻿using Ardalis.GuardClauses;
 using Core.Common.Contracts;
-using log4net;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using REST_Parser;
 using REST_Parser.Models;
@@ -17,17 +17,18 @@ namespace Core.Common
     {
 
         private DbContext dataContext;
+        private ILogger<Common.BaseRepository<T>> logger;
         private readonly IRestToLinqParser<T> restParser;
         private readonly DbSet<T> dbset;
-        protected readonly ILog log;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="dataContext"></param>
-         protected BaseRepository(DbContext dataContext, IRestToLinqParser<T> parser)
+         protected BaseRepository(DbContext dataContext, IRestToLinqParser<T> parser, ILogger<BaseRepository<T>> logger)
         {
-            log.Info($"Creating Repository {this.GetType().Name}");
+            this.logger = logger;
+            this.logger.LogInformation($"Creating Repository {this.GetType().Name}");
             this.dataContext = dataContext;
             this.restParser = parser;
             dbset = DataContext.Set<T>();
@@ -49,17 +50,17 @@ namespace Core.Common
                 entity.Created = DateTime.Now;
                 var added = dbset.Add(entity);
                 _ = await dataContext.SaveChangesAsync().ConfigureAwait(false);
-                log.Info($"Repository: {this.GetType().Name} added new entity: {JsonConvert.SerializeObject(added)}");
+                this.logger.LogInformation($"Repository: {this.GetType().Name} added new entity: {JsonConvert.SerializeObject(added)}");
                 return added.Entity;
             }
             catch (ArgumentNullException)
             {
-                log.Error($"Repository: {this.GetType().Name} tried to add a null entity {nameof(entity)}");
+                this.logger.LogError($"Repository: {this.GetType().Name} tried to add a null entity {nameof(entity)}");
                 throw;
             }
             catch (DbUpdateException e)
             {
-                log.Error($"Repository: {this.GetType().Name} failed throwing exception: {e} when trying to add an entity {nameof(entity)} with the value: {JsonConvert.SerializeObject(entity)}", e);
+                this.logger.LogError($"Repository: {this.GetType().Name} failed throwing exception: {e} when trying to add an entity {nameof(entity)} with the value: {JsonConvert.SerializeObject(entity)}", e);
                 throw;
             }
         }
@@ -71,13 +72,13 @@ namespace Core.Common
                 Guard.Against.Null(entity, nameof(entity));
                 dbset.Remove(entity);
                 await dataContext.SaveChangesAsync().ConfigureAwait(false);
-                log.Info($"Repository: {this.GetType().Name} deleted then entity: {JsonConvert.SerializeObject(entity)}");
+                this.logger.LogInformation($"Repository: {this.GetType().Name} deleted then entity: {JsonConvert.SerializeObject(entity)}");
 
                 return true;
             }
             catch (DbUpdateException e)
             {
-                log.Error($"Repository: {this.GetType().Name} failed throwing exception: {e} when trying to delete an entity : {JsonConvert.SerializeObject(entity)}", e);
+                this.logger.LogError($"Repository: {this.GetType().Name} failed throwing exception: {e} when trying to delete an entity : {JsonConvert.SerializeObject(entity)}", e);
                 return false;
             }
 
@@ -91,15 +92,15 @@ namespace Core.Common
                 foreach (T obj in objects)
                 {
                     dbset.Remove(obj);
-                    log.Info($"Repository: {this.GetType().Name} deleting entity: {JsonConvert.SerializeObject(obj)}");
+                    this.logger.LogInformation($"Repository: {this.GetType().Name} deleting entity: {JsonConvert.SerializeObject(obj)}");
                 }
                 await dataContext.SaveChangesAsync().ConfigureAwait(false);
-                log.Info($"Repository: {this.GetType().Name} deleting multiple entities successful");
+                this.logger.LogInformation($"Repository: {this.GetType().Name} deleting multiple entities successful");
                 return true;
             }
             catch (DbUpdateException e)
             {
-                log.Error($"Repository: {this.GetType().Name} failed throwing exception: {e} when trying to deleting multiple entries", e);
+                this.logger.LogError($"Repository: {this.GetType().Name} failed throwing exception: {e} when trying to deleting multiple entries", e);
                 throw;
             }
         }
@@ -111,6 +112,7 @@ namespace Core.Common
 
         public RestResult<T> GetAll(string restQuery)
         {
+            this.logger.LogInformation($"Repository: {this.GetType().Name} running restQuery: {restQuery}");
             RestResult<T> result = this.restParser.Run(this.dbset, restQuery);
 
             return result;
@@ -119,7 +121,7 @@ namespace Core.Common
         public virtual async Task<T> GetById(long id)
         {
             T result = await dbset.Where(s => s.Id == id).FirstOrDefaultAsync().ConfigureAwait(false);
-            log.Info($"Repository: {this.GetType().Name} retrieving by Id: {id} value: {JsonConvert.SerializeObject(result)}");
+            this.logger.LogInformation($"Repository: {this.GetType().Name} retrieving by Id: {id} value: {JsonConvert.SerializeObject(result)}");
 
             return result;
         }
@@ -132,12 +134,12 @@ namespace Core.Common
                 dbset.Attach(entity);
                 dataContext.Entry(entity).State = EntityState.Modified;
                 await dataContext.SaveChangesAsync().ConfigureAwait(false);
-                log.Info($"Repository: {this.GetType().Name} updating entity: {JsonConvert.SerializeObject(entity)}");
+                this.logger.LogInformation($"Repository: {this.GetType().Name} updating entity: {JsonConvert.SerializeObject(entity)}");
                 return entity;
             }
             catch (DbUpdateException e)
             {
-                log.Error($"Repository: {this.GetType().Name} failed throwing exception: {e} when trying to update entity: {JsonConvert.SerializeObject(entity)}", e);
+                this.logger.LogError($"Repository: {this.GetType().Name} failed throwing exception: {e} when trying to update entity: {JsonConvert.SerializeObject(entity)}", e);
                 throw;
             }
         }
