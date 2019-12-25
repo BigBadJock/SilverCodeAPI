@@ -50,17 +50,17 @@ namespace Core.Common
                 entity.Created = DateTime.Now;
                 var added = dbset.Add(entity);
                 _ = await dataContext.SaveChangesAsync().ConfigureAwait(false);
-                this.logger.LogInformation($"Repository: {this.GetType().Name} added new entity: {JsonConvert.SerializeObject(added)}");
+                this.logger.LogInformation($"Repository: {this.GetType().Name} added new entity");
                 return added.Entity;
             }
             catch (ArgumentNullException)
             {
-                this.logger.LogError($"Repository: {this.GetType().Name} tried to add a null entity {nameof(entity)}");
+                this.logger.LogError($"Repository: {this.GetType().Name} tried to add a null entity");
                 throw;
             }
             catch (DbUpdateException e)
             {
-                this.logger.LogError($"Repository: {this.GetType().Name} failed throwing exception: {e} when trying to add an entity {nameof(entity)} with the value: {JsonConvert.SerializeObject(entity)}", e);
+                this.logger.LogError($"Repository: {this.GetType().Name} failed throwing exception: {e} when trying to add an entity", e);
                 throw;
             }
         }
