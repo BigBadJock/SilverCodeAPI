@@ -115,6 +115,9 @@ namespace Core.Common
             this.logger.LogInformation($"Repository: {this.GetType().Name} running restQuery: {restQuery}");
             RestResult<T> result = this.restParser.Run(this.dbset, restQuery);
 
+            //foreach (var property in this.dataContext.Model.FindEntityType(typeof(T)).GetNavigations())
+            //    result.Data = result.Data.Include(property.Name);
+
             return result;
         }
 
