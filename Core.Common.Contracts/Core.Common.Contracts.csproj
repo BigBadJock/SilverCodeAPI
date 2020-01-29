@@ -9,8 +9,16 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>SilverCode Solutions Ltd</Authors>
+    <Company>SilverCode Solutions Ltd</Company>
+    <Description>Common interfaces for an API</Description>
+    <Copyright>2020</Copyright>
+    <PackageProjectUrl>https://github.com/BigBadJock/SilverCodeAPI</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/BigBadJock/SilverCodeAPI</RepositoryUrl>
+    <RepositoryType>https://github.com/BigBadJock/SilverCodeAPI</RepositoryType>
+    <PackageTags>API, Interfaces</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,8 +26,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.0" />
-    <PackageReference Include="REST-Parser" Version="1.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.1" />
+    <PackageReference Include="REST-Parser" Version="1.0.8" />
   </ItemGroup>
 
 </Project>
