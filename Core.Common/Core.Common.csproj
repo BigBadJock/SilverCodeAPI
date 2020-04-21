@@ -13,7 +13,7 @@
     <Authors>SilverCode Solutions Ltd</Authors>
     <Company>SilverCode Solutions Ltd</Company>
     <Copyright>2020</Copyright>
-    <Version>1.0.13</Version>
+    <Version>1.0.14</Version>
     <PackageReleaseNotes>
       1.0.13 - Update to dotnetcore 3.1 - change package registry to Github and get latest rest parser
       1.0.11 - Add ApiResults and Pagination classes
