@@ -19,13 +19,13 @@ jobs:
       with:
         dotnet-version: 3.1.101
     - name: Install dependencies
-      run: dotnet restore ./SilverCodeAPI/SilverCodeAPI.sln
+      run: dotnet restore ./SilverCodeAPI.sln
     - name: Build
-      run: dotnet build ./SilverCodeAPI/SilverCodeAPI.sln --configuration Release --no-restore
+      run: dotnet build ./SilverCodeAPI.sln --configuration Release --no-restore
     - name: Test
-      run: dotnet test./SilverCodeAPI/SilverCodeAPI.sln --no-restore --verbosity normal
+      run: dotnet test./SilverCodeAPI.sln --no-restore --verbosity normal
     - name: Pack
-      run: dotnet pack ./SilverCodeAPI/SilverCodeAPI.sln --configuration Release -o finalpackage --no-build
+      run: dotnet pack ./SilverCodeAPI.sln --configuration Release -o finalpackage --no-build
     - name: Publish
       uses: actions/upload-artifact@v1.0.0
       with: 
