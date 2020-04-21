@@ -1,0 +1,42 @@
+name: .NET Core
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.101
+        source-url: https://nuget.pkg.github.com/bigbadjock/index.json
+      env:
+         NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+    - name: Install dependencies
+      run: dotnet restore ./SilverCodeAPI.sln
+    - name: Build
+      run: dotnet build ./SilverCodeAPI.sln --configuration Release --no-restore
+    - name: Pack
+      run: dotnet pack ./SilverCodeAPI.sln --configuration Release -o finalpackage --no-build
+    - name: Publish
+      uses: actions/upload-artifact@v1.0.0
+      with: 
+        name: REST-Parser
+        path: finalpackage
+    - name: Push Nupkg to GitHub Packages
+      uses: tanaka-takayoshi/nuget-publish-to-github-packages-action@v2.1
+      with:
+        nupkg-path: './finalpackage/*.nupkg'
+        repo-owner: bigbadjock 
+        gh-user: bigbadjock
+        token: ${{ secrets.GITHUB_TOKEN }}
