@@ -26,8 +26,6 @@ jobs:
       run: dotnet restore ./SilverCodeAPI.sln
     - name: Build
       run: dotnet build ./SilverCodeAPI.sln --configuration Release --no-restore
-    - name: Test
-      run: dotnet test./SilverCodeAPI.sln --no-restore --verbosity normal
     - name: Pack
       run: dotnet pack ./SilverCodeAPI.sln --configuration Release -o finalpackage --no-build
     - name: Publish
