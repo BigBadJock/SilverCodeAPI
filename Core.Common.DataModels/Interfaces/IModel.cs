@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Core.Common.Contracts
+namespace Core.Common.DataModels.Interfaces
 {
     public interface IModel
     {

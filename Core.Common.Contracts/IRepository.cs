@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Core.Common.DataModels.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using REST_Parser.Models;
 using System;
 using System.Linq;

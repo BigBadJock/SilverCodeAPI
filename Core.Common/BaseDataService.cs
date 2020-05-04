@@ -1,4 +1,5 @@
 ﻿using Core.Common.Contracts;
+using Core.Common.DataModels.Interfaces;
 using Microsoft.Extensions.Logging;
 using REST_Parser.Models;
 using System;

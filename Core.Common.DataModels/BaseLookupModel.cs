@@ -1,7 +1,7 @@
-﻿using Core.Common.Contracts;
+﻿using Core.Common.DataModels.Interfaces;
 using System.ComponentModel.DataAnnotations;
 
-namespace Core.Common
+namespace Core.Common.DataModels
 {
     public abstract class BaseLookupModel : BaseModel, ILookupModel
     {

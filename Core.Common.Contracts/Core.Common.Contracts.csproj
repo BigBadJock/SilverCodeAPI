@@ -9,7 +9,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>1.0.5</Version>
+    <Version>1.0.6</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>SilverCode Solutions Ltd</Authors>
     <Company>SilverCode Solutions Ltd</Company>
@@ -19,17 +19,24 @@
     <RepositoryUrl>https://github.com/BigBadJock/SilverCodeAPI</RepositoryUrl>
     <RepositoryType>https://github.com/BigBadJock/SilverCodeAPI</RepositoryType>
     <PackageTags>API, Interfaces</PackageTags>
-    <PackageReleaseNotes>Added BaseDataService and IDataService
+    <PackageReleaseNotes>1.0.6 - Added Core.Common.DataModels, and RefreshToken etc
+1.0.5 - Added BaseDataService and IDataService
 Bumped version</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.Identity.EntityFramework" Version="2.2.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.1" />
     <PackageReference Include="REST-Parser" Version="1.0.11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core.Common.DataModels\Core.Common.DataModels.csproj" />
   </ItemGroup>
 
 </Project>

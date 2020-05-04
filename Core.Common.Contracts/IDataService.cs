@@ -1,4 +1,5 @@
-﻿using REST_Parser.Models;
+﻿using Core.Common.DataModels.Interfaces;
+using REST_Parser.Models;
 using System.Threading.Tasks;
 
 namespace Core.Common.Contracts

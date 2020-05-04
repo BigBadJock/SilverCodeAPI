@@ -1,5 +1,6 @@
 ﻿using Ardalis.GuardClauses;
 using Core.Common.Contracts;
+using Core.Common.DataModels.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;

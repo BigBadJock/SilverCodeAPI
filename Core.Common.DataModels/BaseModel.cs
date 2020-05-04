@@ -1,8 +1,8 @@
-﻿using Core.Common.Contracts;
+﻿using Core.Common.DataModels.Interfaces;
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Core.Common
+namespace Core.Common.DataModels
 {
     public abstract class BaseModel : IModel
     {
