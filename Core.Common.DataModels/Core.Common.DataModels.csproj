@@ -5,6 +5,11 @@
     <Authors>SilverCode Solutions Ltd</Authors>
     <Company>SilverCode Solutions Ltd</Company>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <RepositoryType>GitHub</RepositoryType>
+    <PackageProjectUrl>https://github.com/BigBadJock/SilverCodeAPI</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/BigBadJock/SilverCodeAPI</RepositoryUrl>
+    <PackageTags>API, DataModels, Base Classes</PackageTags>
+    <Copyright>2020</Copyright>
   </PropertyGroup>
 
   <ItemGroup>

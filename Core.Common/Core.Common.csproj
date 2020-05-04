@@ -25,7 +25,7 @@
     <PackageProjectUrl>https://github.com/BigBadJock/SilverCodeAPI</PackageProjectUrl>
     <RepositoryUrl>https://github.com/BigBadJock/SilverCodeAPI</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
-    <PackageTags>API,</PackageTags>
+    <PackageTags>API, Base Classes</PackageTags>
     <AssemblyVersion>1.0.17.0</AssemblyVersion>
   </PropertyGroup>
 
