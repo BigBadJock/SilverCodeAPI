@@ -9,7 +9,7 @@ namespace Core.Common.Contracts
         Task<T> Add(T model);
         Task<T> Update(T model);
         Task<bool> Delete(T model);
-        Task<T> Get(int id);
+        Task<T> GetById(int id);
         RestResult<T> Search(string restQuery);
         
     }

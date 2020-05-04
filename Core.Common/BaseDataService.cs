@@ -23,7 +23,7 @@ namespace Core.Common
             return await this.repository.Delete(model);
         }
 
-        public async Task<T> Get(int id)
+        public async Task<T> GetById(int id)
         {
             return await this.repository.GetById(id);
         }
