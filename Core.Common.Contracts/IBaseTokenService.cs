@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Core.Common.Contracts
 {
-    public interface ITokenService<T> where T: IdentityUser, IBaseUser
+    public interface IBaseTokenService<T> where T: IdentityUser, IBaseUser
     {
         string BuildAccessToken(T user);
         bool ValidateToken(string accessToken);

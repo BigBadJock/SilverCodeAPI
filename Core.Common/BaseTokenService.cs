@@ -15,11 +15,11 @@ using System.Threading.Tasks;
 
 namespace Core.Common
 {
-    public abstract class BaseTokenService<T> : ITokenService<T> where T : IdentityUser, IBaseUser
+    public abstract class BaseTokenService<T> : IBaseTokenService<T> where T : IdentityUser, IBaseUser
     {
-        protected readonly UserManager<T> userManager;
-        protected readonly SignInManager<T> signInManager;
-        protected readonly JWTSettings options;
+        protected UserManager<T> userManager;
+        protected SignInManager<T> signInManager;
+        protected JWTSettings options;
         protected IRefreshTokenRepository refreshTokenRepository;
         protected IUserClaimRepository userClaimRepository;
 

@@ -1,8 +1,9 @@
-﻿namespace Core.Common.DataModels
+﻿using Core.Common.DataModels.Interfaces;
+
+namespace Core.Common.DataModels
 {
-    public class CustomClaimType
+    public class CustomClaimType: BaseModel
     {
-        public int Id { get; set; }
         public string Name { get; set; }
     }
 }
