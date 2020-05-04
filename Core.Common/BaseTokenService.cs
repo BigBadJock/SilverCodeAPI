@@ -1,7 +1,6 @@
 ﻿using Core.Common.Contracts;
 using Core.Common.DataModels;
 using Core.Common.DataModels.Interfaces;
-using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -24,13 +23,13 @@ namespace Core.Common
         protected IRefreshTokenRepository refreshTokenRepository;
         protected IUserClaimRepository userClaimRepository;
 
-        public BaseTokenService(UserManager<T> userManager, SignInManager<T> signInManager, IOptions<JWTSettings> optionsAccessor, IRefreshTokenRepository refreshTokenRepository)
-        {
-            this.userManager = userManager;
-            this.signInManager = signInManager;
-            this.options = optionsAccessor.Value;
-            this.refreshTokenRepository = refreshTokenRepository;
-        }
+        //public BaseTokenService(UserManager<T> userManager, SignInManager<T> signInManager, IOptions<JWTSettings> optionsAccessor, IRefreshTokenRepository refreshTokenRepository)
+        //{
+        //    this.userManager = userManager;
+        //    this.signInManager = signInManager;
+        //    this.options = optionsAccessor.Value;
+        //    this.refreshTokenRepository = refreshTokenRepository;
+        //}
 
         public string BuildAccessToken(T user)
         {
@@ -111,8 +110,7 @@ namespace Core.Common
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var validationParameters = GetValidationParameters();
-            SecurityToken validatedToken;
-            IPrincipal principal = tokenHandler.ValidateToken(accessToken, validationParameters, out validatedToken);
+            tokenHandler.ValidateToken(accessToken, validationParameters, out _);
             return true;
         }
 

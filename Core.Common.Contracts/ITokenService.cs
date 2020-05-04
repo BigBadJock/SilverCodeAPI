@@ -1,6 +1,6 @@
 ﻿using Core.Common.DataModels.Interfaces;
-using Microsoft.AspNet.Identity.EntityFramework;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
 namespace Core.Common.Contracts
 {

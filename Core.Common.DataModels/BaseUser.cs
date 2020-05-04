@@ -1,5 +1,6 @@
-﻿using Core.Common.DataModels.Interfaces;
-using Microsoft.AspNet.Identity.EntityFramework;
+﻿using Microsoft.AspNetCore.Identity;
+using Core.Common.DataModels.Interfaces;
+
 
 namespace Core.Common.DataModels
 {
