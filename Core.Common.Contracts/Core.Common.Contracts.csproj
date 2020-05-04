@@ -9,7 +9,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>1.0.7</Version>
+    <Version>1.0.8</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>SilverCode Solutions Ltd</Authors>
     <Company>SilverCode Solutions Ltd</Company>
@@ -19,11 +19,12 @@
     <RepositoryUrl>https://github.com/BigBadJock/SilverCodeAPI</RepositoryUrl>
     <RepositoryType>https://github.com/BigBadJock/SilverCodeAPI</RepositoryType>
     <PackageTags>API, Interfaces</PackageTags>
-    <PackageReleaseNotes>1.0.7 - rename IDataService.Get() to GetById()
+    <PackageReleaseNotes>1.0.8- ensure no refrerences to EntityFrameworks 6.1
+1.0.7 - rename IDataService.Get() to GetById()
 1.0.6 - Added Core.Common.DataModels, and RefreshToken etc
 1.0.5 - Added BaseDataService and IDataService
 Bumped version</PackageReleaseNotes>
-    <AssemblyVersion>1.0.7.0</AssemblyVersion>
+    <AssemblyVersion>1.0.8.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
