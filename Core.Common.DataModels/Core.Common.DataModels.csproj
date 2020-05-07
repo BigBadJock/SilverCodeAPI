@@ -10,8 +10,9 @@
     <RepositoryUrl>https://github.com/BigBadJock/SilverCodeAPI</RepositoryUrl>
     <PackageTags>API, DataModels, Base Classes</PackageTags>
     <Copyright>2020</Copyright>
-    <Version>1.0.1</Version>
-    <PackageReleaseNotes>1.0.1 - Updated CustomClaimTyp and UserClaim</PackageReleaseNotes>
+    <Version>1.0.2</Version>
+    <PackageReleaseNotes>1.0.2 - remove UserClaim
+1.0.1 - Updated CustomClaimTyp and UserClaim</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

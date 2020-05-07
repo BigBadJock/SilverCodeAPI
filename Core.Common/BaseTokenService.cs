@@ -1,6 +1,8 @@
 ﻿using Core.Common.Contracts;
 using Core.Common.DataModels;
 using Core.Common.DataModels.Interfaces;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -21,7 +23,6 @@ namespace Core.Common
         protected SignInManager<T> signInManager;
         protected JWTSettings options;
         protected IRefreshTokenRepository refreshTokenRepository;
-        protected IUserClaimRepository userClaimRepository;
 
         //public BaseTokenService(UserManager<T> userManager, SignInManager<T> signInManager, IOptions<JWTSettings> optionsAccessor, IRefreshTokenRepository refreshTokenRepository)
         //{
@@ -31,21 +32,20 @@ namespace Core.Common
         //    this.refreshTokenRepository = refreshTokenRepository;
         //}
 
-        public string BuildAccessToken(T user)
+        public async Task<string> BuildAccessToken(T user)
         {
             var secret = options.SecretKey;
 
-            IEnumerable<UserClaim> claims = this.userClaimRepository.GetAll().Where(x => x.UserId == user.Id).ToList();
-
+            var claims = (await userManager.GetClaimsAsync(user)).Select(x=>x.Type);
 
             var claimIdentity = new ClaimsIdentity(new[]
             {
                 new Claim(ClaimTypes.Email, user.Email),
             });
 
-            foreach(UserClaim claim in claims)
+            foreach (string claim in claims)
             {
-                claimIdentity.AddClaim(new Claim(claim.CustomClaimId.ToString(), true.ToString()));
+                claimIdentity.AddClaim(new Claim(claim, true.ToString()));
             }
 
             JwtSecurityToken token = new JwtSecurityToken(
@@ -97,7 +97,7 @@ namespace Core.Common
                     {
                         if(token.Expiry > DateTime.Now)
                         {
-                            accessToken = this.BuildAccessToken(user);
+                            accessToken = await this.BuildAccessToken(user);
                         }
                     }
                 }
