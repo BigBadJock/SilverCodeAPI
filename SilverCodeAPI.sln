@@ -9,7 +9,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.Common", "Core.Common\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1.Core", "1.Core", "{A6A72E93-AE25-4804-9204-D2705C8FD805}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Common.DataModels", "Core.Common.DataModels\Core.Common.DataModels.csproj", "{361E760B-C536-4D8C-8234-ED2B53311091}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.Common.DataModels", "Core.Common.DataModels\Core.Common.DataModels.csproj", "{361E760B-C536-4D8C-8234-ED2B53311091}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6B61E834-F07B-466F-ADAA-56E164E60C23}"
+	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		nuget.config = nuget.config
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
