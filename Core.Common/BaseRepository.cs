@@ -37,9 +37,13 @@ namespace Core.Common
             dbset = DataContext.Set<T>();
 
             var props = typeof(T).GetProperties();
-            this.includes = props.Where(p => p.PropertyType == typeof(IModel)).Select(p=>p.Name);
+            this.logger.LogInformation($"property count: {props.Length}");
+            props.ToList().ForEach(x => logger.LogInformation($"{this.GetType().Name} Properties: {x}"));
 
-            this.includes.ToList().ForEach(x => logger.LogInformation($"{this.GetType().Name} including {x}"));
+            this.includes = props.Where(p => p.PropertyType == typeof(IModel)).Select(p=>p.Name);
+            this.logger.LogInformation($"includes count: {includes.ToList().Count}");
+
+            this.includes.ToList().ForEach(x => logger.LogInformation($"Includes: {this.GetType().Name} including {x}"));
         }
 
         protected DbContext DataContext
