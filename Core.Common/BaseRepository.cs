@@ -36,17 +36,13 @@ namespace Core.Common
             this.restParser = parser;
             dbset = DataContext.Set<T>();
 
-            var props = typeof(T).GetProperties();
-            props.ToList().ForEach(x => logger.LogInformation($"{this.GetType().Name} Properties: {x}"));
+            var props = typeof(T).GetProperties().ToList();
 
-            props.ToList().ForEach(prop =>
+            props.ForEach(prop =>
             {
                 this.logger.LogInformation($"property type: {prop.PropertyType}");
-                if (typeof(IModel).IsAssignableFrom(prop.PropertyType))
-                {
-                    this.logger.LogInformation($"adding property: {prop.Name}");
-                    this.includes.Add(prop.Name);
-                }
+                this.logger.LogInformation($"is generic type = {prop.PropertyType.BaseType.IsGenericType}");
+
                 if (prop.PropertyType.BaseType.IsGenericType)
                 { 
                     this.logger.LogInformation($"adding property collection: {prop.Name}");
