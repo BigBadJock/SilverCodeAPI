@@ -13,8 +13,9 @@
     <Authors>SilverCode Solutions Ltd</Authors>
     <Company>SilverCode Solutions Ltd</Company>
     <Copyright>2020</Copyright>
-    <Version>1.0.22</Version>
-    <PackageReleaseNotes>1.0.22 - Updated BaseDataService
+    <Version>1.0.23</Version>
+    <PackageReleaseNotes>1.0.23 - Add .Includes() to BaseRepository
+1.0.22 - Updated BaseDataService
 1.0.21 - Updated BaseTokenService
 1.0.20 - Update RestParser
       1.0.19 - Updated BaseTokenService
@@ -31,7 +32,7 @@
     <RepositoryUrl>https://github.com/BigBadJock/SilverCodeAPI</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>API, Base Classes</PackageTags>
-    <AssemblyVersion>1.0.22.0</AssemblyVersion>
+    <AssemblyVersion>1.0.23.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
