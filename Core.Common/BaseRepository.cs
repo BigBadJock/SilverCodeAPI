@@ -22,7 +22,7 @@ namespace Core.Common
         private ILogger<Common.BaseRepository<T>> logger;
         private readonly IRestToLinqParser<T> restParser;
         private readonly DbSet<T> dbset;
-        private readonly IEnumerable<string> includes;
+        private readonly List<string> includes;
 
         /// <summary>
         /// Constructor
@@ -37,13 +37,24 @@ namespace Core.Common
             dbset = DataContext.Set<T>();
 
             var props = typeof(T).GetProperties();
-            this.logger.LogInformation($"property count: {props.Length}");
             props.ToList().ForEach(x => logger.LogInformation($"{this.GetType().Name} Properties: {x}"));
 
-            this.includes = props.Where(p => p.PropertyType == typeof(IModel) || typeof(ICollection<>).IsAssignableFrom(p.PropertyType)).Select(p=>p.Name);
-            this.logger.LogInformation($"includes count: {includes.ToList().Count}");
+            props.ToList().ForEach(prop =>
+            {
+                this.logger.LogInformation($"property type: {prop.PropertyType}");
+                if (typeof(IModel).IsAssignableFrom(prop.PropertyType))
+                {
+                    this.logger.LogInformation($"adding property: {prop.Name}");
+                    this.includes.Add(prop.Name);
+                }
+                if (typeof(ICollection<>).IsAssignableFrom(prop.PropertyType))
+                {
+                    this.logger.LogInformation($"adding property collection: {prop.Name}");
+                    this.includes.Add(prop.Name);
+                }
 
-            this.includes.ToList().ForEach(x => logger.LogInformation($"Includes: {this.GetType().Name} including {x}"));
+            });
+            this.logger.LogInformation($"includes count: {includes.Count}");
         }
 
         protected DbContext DataContext

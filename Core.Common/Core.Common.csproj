@@ -13,8 +13,9 @@
     <Authors>SilverCode Solutions Ltd</Authors>
     <Company>SilverCode Solutions Ltd</Company>
     <Copyright>2020</Copyright>
-    <Version>1.0.24.2</Version>
-    <PackageReleaseNotes>1.0.24.2 - Added check for ICollection on includes
+    <Version>1.0.24.3</Version>
+    <PackageReleaseNotes>1.0.24.3 - Changed check and logging
+1.0.24.2 - Added check for ICollection on includes
 1.0.24.1 - Added further logging
 1.0.23.1 - Add logging to assit debugging
 1.0.23 - Add .Includes() to BaseRepository
@@ -35,8 +36,8 @@
     <RepositoryUrl>https://github.com/BigBadJock/SilverCodeAPI</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>API, Base Classes</PackageTags>
-    <AssemblyVersion>1.0.24.2</AssemblyVersion>
-    <FileVersion>1.0.24.2</FileVersion>
+    <AssemblyVersion>1.0.24.3</AssemblyVersion>
+    <FileVersion>1.0.24.3</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
