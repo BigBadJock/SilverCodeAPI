@@ -22,7 +22,7 @@ namespace Core.Common
         private ILogger<Common.BaseRepository<T>> logger;
         private readonly IRestToLinqParser<T> restParser;
         private readonly DbSet<T> dbset;
-        private readonly List<string> includes;
+        private List<string> includes;
 
         /// <summary>
         /// Constructor
@@ -37,13 +37,18 @@ namespace Core.Common
             dbset = DataContext.Set<T>();
 
             var props = typeof(T).GetProperties().ToList();
+            
+            GetIncludes(props);
+        }
+
+        private void GetIncludes(List<PropertyInfo> props)
+        {
             this.includes = new List<string>();
             props.ForEach(prop =>
             {
                 try
                 {
                     {
-                        this.logger.LogInformation($"prop: {prop.Name} - property type: {prop.PropertyType}" );
 
                         if (prop.PropertyType.IsGenericType)
                         {
@@ -51,13 +56,6 @@ namespace Core.Common
                             this.includes.Add(prop.Name);
                         }
                     }
-
-                    if (typeof(ICollection<>).IsAssignableFrom(prop.PropertyType))
-                    {
-                        this.logger.LogInformation($"prop: {prop.Name} - property type: {prop.PropertyType} - ICollection is assignable");
-                        this.includes.Add(prop.Name);
-                    }
-
                 }
                 catch (Exception ex)
                 {
@@ -67,7 +65,6 @@ namespace Core.Common
 
 
             });
-            this.logger.LogInformation($"includes count: {includes.Count}");
         }
 
         protected DbContext DataContext
@@ -141,26 +138,18 @@ namespace Core.Common
             }
         }
 
-        public virtual IQueryable<T> GetAll()
+        public virtual IQueryable<T> GetAll(bool includeChildren = false)
         {
-            var result = dbset;
-            foreach(var include in this.includes)
-            {
-                result.Include(include);
-            }
+            var dbResult = getAllData(includeChildren);
 
-            return result;
+            return dbResult;
         }
 
-        public RestResult<T> GetAll(string restQuery)
+        public RestResult<T> GetAll(string restQuery, bool includeChildren = false)
         {
             this.logger.LogInformation($"Repository: {this.GetType().Name} running restQuery: {restQuery}");
 
-            var dbResult = dbset;
-            foreach (var include in this.includes)
-            {
-                dbResult.Include(include);
-            }
+            var dbResult = getAllData(includeChildren);
 
             RestResult<T> result = this.restParser.Run(dbResult, restQuery);
 
@@ -168,16 +157,10 @@ namespace Core.Common
             return result;
         }
 
-        public virtual async Task<T> GetById(long id)
+        public virtual async Task<T> GetById(long id,bool includeChildren = false)
         {
-            var dbResult = dbset;
-            foreach (var include in this.includes)
-            {
-                this.logger.LogInformation($"Repository: {this.GetType().Name} retrieving by Id: {id} including : {include}");
-                dbResult.Include(include);
-            }
+            var dbResult = getAllData(includeChildren);
             T result = await dbResult.Where(s => s.Id == id).FirstOrDefaultAsync().ConfigureAwait(false);
-            this.logger.LogInformation($"Repository: {this.GetType().Name} retrieving by Id: {id} value: {JsonConvert.SerializeObject(result)}");
 
             return result;
         }
@@ -200,6 +183,17 @@ namespace Core.Common
             }
         }
 
-
+        private IQueryable<T> getAllData(bool includeChildren)
+        {
+            var dbResult = dbset;
+            if (includeChildren)
+            {
+                foreach (var include in this.includes)
+                {
+                    dbResult.Include(include);
+                }
+            }
+            return dbResult;
+        }
     }
 }

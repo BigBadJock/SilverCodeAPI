@@ -13,8 +13,9 @@
     <Authors>SilverCode Solutions Ltd</Authors>
     <Company>SilverCode Solutions Ltd</Company>
     <Copyright>2020</Copyright>
-    <Version>1.0.24.11</Version>
-    <PackageReleaseNotes>1.0.24.11 - log where adding includes to getById
+    <Version>1.0.24.12</Version>
+    <PackageReleaseNotes>1.0.24.12 - fix bug getting includes, refactor
+1.0.24.11 - log where adding includes to getById
 1..0.24.10 - change conditions again
 1.0.24.9 - change ifs again
 1.0.24.8 - log exception 
@@ -44,8 +45,8 @@
     <RepositoryUrl>https://github.com/BigBadJock/SilverCodeAPI</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>API, Base Classes</PackageTags>
-    <AssemblyVersion>1.0.24.11</AssemblyVersion>
-    <FileVersion>1.0.24.11</FileVersion>
+    <AssemblyVersion>1.0.24.12</AssemblyVersion>
+    <FileVersion>1.0.24.12</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
