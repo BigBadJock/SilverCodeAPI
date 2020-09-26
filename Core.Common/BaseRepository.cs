@@ -42,15 +42,11 @@ namespace Core.Common
             {
                 try
                 {
-                    if (prop.PropertyType.BaseType != null)
                     {
-                        this.logger.LogInformation($"prop: {prop.Name} - property type: {prop.PropertyType} - baseType: {prop.PropertyType.BaseType}" );
+                        this.logger.LogInformation($"prop: {prop.Name} - property type: {prop.PropertyType}" );
 
-                        if (prop.PropertyType.BaseType.IsGenericType)
+                        if (prop.PropertyType.IsGenericType)
                         {
-                            this.logger.LogInformation($"property type: {prop.PropertyType}");
-                            this.logger.LogInformation($"is generic type = {prop.PropertyType.BaseType.IsGenericType}");
-
                             this.logger.LogInformation($"adding property collection: {prop.Name}");
                             this.includes.Add(prop.Name);
                         }

@@ -13,9 +13,10 @@
     <Authors>SilverCode Solutions Ltd</Authors>
     <Company>SilverCode Solutions Ltd</Company>
     <Copyright>2020</Copyright>
-    <Version>1.0.24.9</Version>
-    <PackageReleaseNotes>1.0.24.7 - change ifs again
-1.0.24.7 - log exception 
+    <Version>1.0.24.10</Version>
+    <PackageReleaseNotes>1..0.24.10 - change conditions again
+1.0.24.9 - change ifs again
+1.0.24.8 - log exception 
 1.0.24.7 - initialise list
 1.0.24.5 - Added exception checking
 1.0.24.5 - Changed collection check &amp; logging
@@ -42,8 +43,8 @@
     <RepositoryUrl>https://github.com/BigBadJock/SilverCodeAPI</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>API, Base Classes</PackageTags>
-    <AssemblyVersion>1.0.24.9</AssemblyVersion>
-    <FileVersion>1.0.24.9</FileVersion>
+    <AssemblyVersion>1.0.24.10</AssemblyVersion>
+    <FileVersion>1.0.24.10</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
