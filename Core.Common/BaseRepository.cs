@@ -42,15 +42,26 @@ namespace Core.Common
             {
                 try
                 {
-                    this.logger.LogInformation($"property type: {prop.PropertyType}");
+                    if (prop.PropertyType.BaseType != null)
+                    {
+                        this.logger.LogInformation($"prop: {prop.Name} - property type: {prop.PropertyType} - baseType: {prop.PropertyType.BaseType}" );
 
-                    this.logger.LogInformation($"is generic type = {prop.PropertyType.BaseType.IsGenericType}");
+                        if (prop.PropertyType.BaseType.IsGenericType)
+                        {
+                            this.logger.LogInformation($"property type: {prop.PropertyType}");
+                            this.logger.LogInformation($"is generic type = {prop.PropertyType.BaseType.IsGenericType}");
 
-                    if (prop.PropertyType.BaseType.IsGenericType)
-                    { 
-                        this.logger.LogInformation($"adding property collection: {prop.Name}");
+                            this.logger.LogInformation($"adding property collection: {prop.Name}");
+                            this.includes.Add(prop.Name);
+                        }
+                    }
+
+                    if (typeof(ICollection<>).IsAssignableFrom(prop.PropertyType))
+                    {
+                        this.logger.LogInformation($"prop: {prop.Name} - property type: {prop.PropertyType} - ICollection is assignable");
                         this.includes.Add(prop.Name);
                     }
+
                 }
                 catch (Exception ex)
                 {
