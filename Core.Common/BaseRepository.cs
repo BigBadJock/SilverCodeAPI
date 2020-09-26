@@ -37,13 +37,13 @@ namespace Core.Common
             dbset = DataContext.Set<T>();
 
             var props = typeof(T).GetProperties().ToList();
-
+            this.includes = new List<string>();
             props.ForEach(prop =>
             {
-                this.logger.LogInformation($"property type: {prop.PropertyType}");
-
                 try
                 {
+                    this.logger.LogInformation($"property type: {prop.PropertyType}");
+
                     this.logger.LogInformation($"is generic type = {prop.PropertyType.BaseType.IsGenericType}");
 
                     if (prop.PropertyType.BaseType.IsGenericType)

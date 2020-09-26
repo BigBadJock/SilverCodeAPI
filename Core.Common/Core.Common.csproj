@@ -13,8 +13,9 @@
     <Authors>SilverCode Solutions Ltd</Authors>
     <Company>SilverCode Solutions Ltd</Company>
     <Copyright>2020</Copyright>
-    <Version>1.0.24.6</Version>
-    <PackageReleaseNotes>1.0.24.5 - Added exception checking
+    <Version>1.0.24.7</Version>
+    <PackageReleaseNotes>1.0.24.7 - initialise list
+1.0.24.5 - Added exception checking
 1.0.24.5 - Changed collection check &amp; logging
 1.0.24.3 - Changed collection check
 1.0.24.3 - Changed check and logging
@@ -39,8 +40,8 @@
     <RepositoryUrl>https://github.com/BigBadJock/SilverCodeAPI</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>API, Base Classes</PackageTags>
-    <AssemblyVersion>1.0.24.6</AssemblyVersion>
-    <FileVersion>1.0.24.6</FileVersion>
+    <AssemblyVersion>1.0.24.7</AssemblyVersion>
+    <FileVersion>1.0.24.7</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
