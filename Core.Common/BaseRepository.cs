@@ -40,7 +40,7 @@ namespace Core.Common
             this.logger.LogInformation($"property count: {props.Length}");
             props.ToList().ForEach(x => logger.LogInformation($"{this.GetType().Name} Properties: {x}"));
 
-            this.includes = props.Where(p => p.PropertyType == typeof(IModel)).Select(p=>p.Name);
+            this.includes = props.Where(p => p.PropertyType == typeof(IModel) || typeof(ICollection<>).IsAssignableFrom(p.PropertyType)).Select(p=>p.Name);
             this.logger.LogInformation($"includes count: {includes.ToList().Count}");
 
             this.includes.ToList().ForEach(x => logger.LogInformation($"Includes: {this.GetType().Name} including {x}"));
