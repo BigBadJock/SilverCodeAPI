@@ -52,9 +52,9 @@ namespace Core.Common
                         this.includes.Add(prop.Name);
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    this.logger.LogInformation($"problem checking property type: {prop.PropertyType}");
+                    this.logger.LogError($"error checking property type: {prop.PropertyType} error: {ex.Message}");
 
                 }
 
