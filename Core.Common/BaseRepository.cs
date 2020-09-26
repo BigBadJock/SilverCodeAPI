@@ -41,13 +41,23 @@ namespace Core.Common
             props.ForEach(prop =>
             {
                 this.logger.LogInformation($"property type: {prop.PropertyType}");
-                this.logger.LogInformation($"is generic type = {prop.PropertyType.BaseType.IsGenericType}");
 
-                if (prop.PropertyType.BaseType.IsGenericType)
-                { 
-                    this.logger.LogInformation($"adding property collection: {prop.Name}");
-                    this.includes.Add(prop.Name);
+                try
+                {
+                    this.logger.LogInformation($"is generic type = {prop.PropertyType.BaseType.IsGenericType}");
+
+                    if (prop.PropertyType.BaseType.IsGenericType)
+                    { 
+                        this.logger.LogInformation($"adding property collection: {prop.Name}");
+                        this.includes.Add(prop.Name);
+                    }
                 }
+                catch (Exception)
+                {
+                    this.logger.LogInformation($"problem checking property type: {prop.PropertyType}");
+
+                }
+
 
             });
             this.logger.LogInformation($"includes count: {includes.Count}");
