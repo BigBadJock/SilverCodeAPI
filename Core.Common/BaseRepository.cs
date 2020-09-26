@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Core.Common
@@ -21,6 +22,7 @@ namespace Core.Common
         private ILogger<Common.BaseRepository<T>> logger;
         private readonly IRestToLinqParser<T> restParser;
         private readonly DbSet<T> dbset;
+        private readonly IEnumerable<string> includes;
 
         /// <summary>
         /// Constructor
@@ -33,6 +35,9 @@ namespace Core.Common
             this.dataContext = dataContext;
             this.restParser = parser;
             dbset = DataContext.Set<T>();
+
+            var props = typeof(T).GetProperties();
+            this.includes = props.Where(p => p.PropertyType == typeof(IModel)).Select(p=>p.Name);
         }
 
         protected DbContext DataContext
@@ -108,23 +113,39 @@ namespace Core.Common
 
         public virtual IQueryable<T> GetAll()
         {
-            return dbset;
+            var result = dbset;
+            foreach(var include in this.includes)
+            {
+                result.Include(include);
+            }
+
+            return result;
         }
 
         public RestResult<T> GetAll(string restQuery)
         {
             this.logger.LogInformation($"Repository: {this.GetType().Name} running restQuery: {restQuery}");
-            RestResult<T> result = this.restParser.Run(this.dbset, restQuery);
 
-            //foreach (var property in this.dataContext.Model.FindEntityType(typeof(T)).GetNavigations())
-            //    result.Data = result.Data.Include(property.Name);
+            var dbResult = dbset;
+            foreach (var include in this.includes)
+            {
+                dbResult.Include(include);
+            }
+
+            RestResult<T> result = this.restParser.Run(dbResult, restQuery);
+
 
             return result;
         }
 
         public virtual async Task<T> GetById(long id)
         {
-            T result = await dbset.Where(s => s.Id == id).FirstOrDefaultAsync().ConfigureAwait(false);
+            var dbResult = dbset;
+            foreach (var include in this.includes)
+            {
+                dbResult.Include(include);
+            }
+            T result = await dbResult.Where(s => s.Id == id).FirstOrDefaultAsync().ConfigureAwait(false);
             this.logger.LogInformation($"Repository: {this.GetType().Name} retrieving by Id: {id} value: {JsonConvert.SerializeObject(result)}");
 
             return result;
