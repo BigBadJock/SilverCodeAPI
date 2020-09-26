@@ -187,12 +187,12 @@ namespace Core.Common
 
         private IQueryable<T> getAllData()
         {
-            var dbResult = dbset;
+            var dbResult = dbset.AsQueryable();
             if (this.IncludeChildren)
             {
                 foreach (var include in this.includes)
                 {
-                    dbResult.Include(include);
+                    dbResult = dbResult.Include(include);
                 }
             }
             return dbResult;
