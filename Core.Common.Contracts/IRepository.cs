@@ -13,12 +13,14 @@ namespace Core.Common.Contracts
 
         DbSet<T>  DbSet{ get;  }
 
+        bool IncludeChildren { get; set; }
+
         #region get by id
-        Task<T> GetById(long id, bool includeChildren = false);
+        Task<T> GetById(long id);
         #endregion
 
-        IQueryable<T> GetAll(bool includeChildren = false);
-        RestResult<T> GetAll(string restQuery, bool includeChildren = false);
+        IQueryable<T> GetAll();
+        RestResult<T> GetAll(string restQuery);
 
         #region update
         Task<T> Add(T entity);

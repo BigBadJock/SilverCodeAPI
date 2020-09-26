@@ -41,6 +41,8 @@ namespace Core.Common
             GetIncludes(props);
         }
 
+        public bool IncludeChildren { get; set; }
+
         private void GetIncludes(List<PropertyInfo> props)
         {
             this.includes = new List<string>();
@@ -138,18 +140,18 @@ namespace Core.Common
             }
         }
 
-        public virtual IQueryable<T> GetAll(bool includeChildren = false)
+        public virtual IQueryable<T> GetAll()
         {
-            var dbResult = getAllData(includeChildren);
+            var dbResult = getAllData();
 
             return dbResult;
         }
 
-        public RestResult<T> GetAll(string restQuery, bool includeChildren = false)
+        public RestResult<T> GetAll(string restQuery)
         {
             this.logger.LogInformation($"Repository: {this.GetType().Name} running restQuery: {restQuery}");
 
-            var dbResult = getAllData(includeChildren);
+            var dbResult = getAllData();
 
             RestResult<T> result = this.restParser.Run(dbResult, restQuery);
 
@@ -157,9 +159,9 @@ namespace Core.Common
             return result;
         }
 
-        public virtual async Task<T> GetById(long id,bool includeChildren = false)
+        public virtual async Task<T> GetById(long id)
         {
-            var dbResult = getAllData(includeChildren);
+            var dbResult = getAllData();
             T result = await dbResult.Where(s => s.Id == id).FirstOrDefaultAsync().ConfigureAwait(false);
 
             return result;
@@ -183,10 +185,10 @@ namespace Core.Common
             }
         }
 
-        private IQueryable<T> getAllData(bool includeChildren)
+        private IQueryable<T> getAllData()
         {
             var dbResult = dbset;
-            if (includeChildren)
+            if (this.IncludeChildren)
             {
                 foreach (var include in this.includes)
                 {
