@@ -38,6 +38,8 @@ namespace Core.Common
 
             var props = typeof(T).GetProperties();
             this.includes = props.Where(p => p.PropertyType == typeof(IModel)).Select(p=>p.Name);
+
+            this.includes.ToList().ForEach(x => logger.LogInformation($"{this.GetType().Name} including {x}"));
         }
 
         protected DbContext DataContext
