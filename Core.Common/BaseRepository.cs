@@ -47,8 +47,8 @@ namespace Core.Common
                     this.logger.LogInformation($"adding property: {prop.Name}");
                     this.includes.Add(prop.Name);
                 }
-                if (typeof(ICollection<>).IsAssignableFrom(prop.PropertyType))
-                {
+                if (prop.PropertyType.BaseType.IsGenericType)
+                { 
                     this.logger.LogInformation($"adding property collection: {prop.Name}");
                     this.includes.Add(prop.Name);
                 }
