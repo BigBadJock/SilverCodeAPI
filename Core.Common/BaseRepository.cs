@@ -173,6 +173,7 @@ namespace Core.Common
             var dbResult = dbset;
             foreach (var include in this.includes)
             {
+                this.logger.LogInformation($"Repository: {this.GetType().Name} retrieving by Id: {id} including : {include}");
                 dbResult.Include(include);
             }
             T result = await dbResult.Where(s => s.Id == id).FirstOrDefaultAsync().ConfigureAwait(false);
