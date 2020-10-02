@@ -76,7 +76,7 @@ namespace Core.Common
             }
         }
 
-        public async Task<T> GetById(int id)
+        public async Task<T> GetById(Guid id)
         {
             try
             {

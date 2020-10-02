@@ -16,7 +16,7 @@ namespace Core.Common.Contracts
         bool IncludeChildren { get; set; }
 
         #region get by id
-        Task<T> GetById(long id);
+        Task<T> GetById(Guid id);
         #endregion
 
         IQueryable<T> GetAll();

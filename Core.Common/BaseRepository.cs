@@ -159,7 +159,7 @@ namespace Core.Common
             return result;
         }
 
-        public virtual async Task<T> GetById(long id)
+        public virtual async Task<T> GetById(Guid id)
         {
             var dbResult = getAllData();
             T result = await dbResult.Where(s => s.Id == id).FirstOrDefaultAsync().ConfigureAwait(false);

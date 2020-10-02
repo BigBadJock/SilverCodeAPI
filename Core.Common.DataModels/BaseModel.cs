@@ -11,7 +11,7 @@ namespace Core.Common.DataModels
         /// </summary>
         /// <example>1</example>
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Delete flag
