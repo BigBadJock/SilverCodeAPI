@@ -13,10 +13,10 @@ namespace Core.Common.Contracts
 
         DbSet<T>  DbSet{ get;  }
 
-        bool IncludeChildren { get; set; }
+        bool AlwaysIncludeChildren { get; set; }
 
         #region get by id
-        Task<T> GetById(Guid id);
+        Task<T> GetById(Guid id, bool includeChildren = false);
         #endregion
 
         IQueryable<T> GetAll();

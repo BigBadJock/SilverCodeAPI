@@ -21,7 +21,7 @@ namespace Core.Common
 
         }
 
-        public async Task<T> Add(T model)
+        public virtual async Task<T> Add(T model)
         {
             try
             {
@@ -40,7 +40,7 @@ namespace Core.Common
 
         }
 
-        public async Task<bool> Delete(T model)
+        public virtual async Task<bool> Delete(T model)
         {
             try
             {
@@ -58,7 +58,7 @@ namespace Core.Common
             }
         }
 
-        public async Task<bool> Delete(Expression<Func<T, bool>> where)
+        public virtual async Task<bool> Delete(Expression<Func<T, bool>> where)
         {
             try
             {
@@ -76,7 +76,7 @@ namespace Core.Common
             }
         }
 
-        public async Task<T> GetById(Guid id)
+        public virtual async Task<T> GetById(Guid id)
         {
             try
             {
@@ -95,7 +95,7 @@ namespace Core.Common
 
         }
 
-        public RestResult<T> Search(string restQuery)
+        public virtual RestResult<T> Search(string restQuery)
         {
             try
             {
@@ -113,7 +113,7 @@ namespace Core.Common
             }
         }
 
-        public async Task<T> Update(T model)
+        public virtual async Task<T> Update(T model)
         {
            try
             {

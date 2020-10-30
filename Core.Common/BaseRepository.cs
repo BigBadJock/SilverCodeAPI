@@ -41,7 +41,7 @@ namespace Core.Common
             GetIncludes(props);
         }
 
-        public bool IncludeChildren { get; set; }
+        public bool AlwaysIncludeChildren { get; set; }
 
         private void GetIncludes(List<PropertyInfo> props)
         {
@@ -159,9 +159,9 @@ namespace Core.Common
             return result;
         }
 
-        public virtual async Task<T> GetById(Guid id)
+        public virtual async Task<T> GetById(Guid id, bool includeChildren = false)
         {
-            var dbResult = getAllData();
+            var dbResult = getAllData(includeChildren);
             T result = await dbResult.Where(s => s.Id == id).FirstOrDefaultAsync().ConfigureAwait(false);
 
             return result;
@@ -185,14 +185,14 @@ namespace Core.Common
             }
         }
 
-        private IQueryable<T> getAllData()
+        private IQueryable<T> getAllData(bool includeForCall = false)
         {
             var dbResult = dbset.AsQueryable();
-            if (this.IncludeChildren)
+            if (this.AlwaysIncludeChildren || includeForCall)
             {
-                foreach (var include in this.includes)
+                foreach (var inc in this.includes)
                 {
-                    dbResult = dbResult.Include(include);
+                    dbResult = dbResult.Include(inc);
                 }
             }
             return dbResult;
