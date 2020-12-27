@@ -13,8 +13,9 @@
     <Authors>SilverCode Solutions Ltd</Authors>
     <Company>SilverCode Solutions Ltd</Company>
     <Copyright>2020</Copyright>
-    <Version>1.0.26.0</Version>
-    <PackageReleaseNotes>1.0.26.0 - Add IncludeChildren flag on Repository.GetById. Make methods virtual on BaseDataService
+    <Version>1.0.27.0</Version>
+    <PackageReleaseNotes>1.0.27.0 - Update version of RestParser
+1.0.26.0 - Add IncludeChildren flag on Repository.GetById. Make methods virtual on BaseDataService
 1.0.25.0 -  Change model id to GUID
 1.0.24.14 - refix bug
 1.0.24.13 - add flag to include children
@@ -49,8 +50,8 @@
     <RepositoryUrl>https://github.com/BigBadJock/SilverCodeAPI</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>API, Base Classes</PackageTags>
-    <AssemblyVersion>1.0.26.0</AssemblyVersion>
-    <FileVersion>1.0.26.0</FileVersion>
+    <AssemblyVersion>1.0.27.0</AssemblyVersion>
+    <FileVersion>1.0.27.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -59,7 +60,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.3" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="REST-Parser" Version="1.0.13" />
+    <PackageReference Include="REST-Parser" Version="1.0.14" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.5.1" />
   </ItemGroup>
 
