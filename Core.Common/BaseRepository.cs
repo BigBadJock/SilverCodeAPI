@@ -18,8 +18,8 @@ namespace Core.Common
     public abstract class BaseRepository<T> : IRepository<T> where T : class, IModel, new()
     {
 
-        private DbContext dataContext;
-        private ILogger<Common.BaseRepository<T>> logger;
+        private readonly DbContext dataContext;
+        private readonly ILogger<Common.BaseRepository<T>> logger;
         private readonly IRestToLinqParser<T> restParser;
         private readonly DbSet<T> dbset;
         private List<string> includes;
@@ -142,7 +142,7 @@ namespace Core.Common
 
         public virtual IQueryable<T> GetAll()
         {
-            var dbResult = getAllData();
+            var dbResult = GetAllData();
 
             return dbResult;
         }
@@ -151,7 +151,7 @@ namespace Core.Common
         {
             this.logger.LogInformation($"Repository: {this.GetType().Name} running restQuery: {restQuery}");
 
-            var dbResult = getAllData();
+            var dbResult = GetAllData();
 
             RestResult<T> result = this.restParser.Run(dbResult, restQuery);
 
@@ -161,7 +161,7 @@ namespace Core.Common
 
         public virtual async Task<T> GetById(Guid id, bool includeChildren = false)
         {
-            var dbResult = getAllData(includeChildren);
+            var dbResult = GetAllData(includeChildren);
             T result = await dbResult.Where(s => s.Id == id).FirstOrDefaultAsync().ConfigureAwait(false);
 
             return result;
@@ -185,7 +185,7 @@ namespace Core.Common
             }
         }
 
-        private IQueryable<T> getAllData(bool includeForCall = false)
+        private IQueryable<T> GetAllData(bool includeForCall = false)
         {
             var dbResult = dbset.AsQueryable();
             if (this.AlwaysIncludeChildren || includeForCall)

@@ -62,7 +62,7 @@ namespace Core.Common
         {
             try
             {
-                this.logger.LogInformation($"DataService: {this.GetType().Name} deleting on condition: ${where.ToString()}");
+                this.logger.LogInformation($"DataService: {this.GetType().Name} deleting on condition: ${where}");
                 return await this.repository.Delete(where);
             }
             catch (Exception ex)
@@ -80,7 +80,7 @@ namespace Core.Common
         {
             try
             {
-                this.logger.LogInformation($"DataService: {this.GetType().Name} getting by id: ${id.ToString()}");
+                this.logger.LogInformation($"DataService: {this.GetType().Name} getting by id: ${id}");
                 return await this.repository.GetById(id);
             }
             catch (Exception ex)
@@ -90,7 +90,7 @@ namespace Core.Common
             }
             finally
             {
-                this.logger.LogInformation($"DataService: {this.GetType().Name} exiting getting by id: ${id.ToString()}");
+                this.logger.LogInformation($"DataService: {this.GetType().Name} exiting getting by id: ${id}");
             }
 
         }

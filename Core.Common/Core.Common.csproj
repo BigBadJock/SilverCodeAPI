@@ -13,8 +13,9 @@
     <Authors>SilverCode Solutions Ltd</Authors>
     <Company>SilverCode Solutions Ltd</Company>
     <Copyright>2020</Copyright>
-    <Version>1.0.29.0</Version>
-    <PackageReleaseNotes>1.0.29.0 - Update version of RestParser
+    <Version>1.0.29.1</Version>
+    <PackageReleaseNotes>1.0.29.1 - fix some warnings
+1.0.29.0 - Update version of RestParser
 1.0.28.0 - Update version of RestParser
 1.0.27.0 - Update version of RestParser
 1.0.26.0 - Add IncludeChildren flag on Repository.GetById. Make methods virtual on BaseDataService
@@ -52,8 +53,8 @@
     <RepositoryUrl>https://github.com/BigBadJock/SilverCodeAPI</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>API, Base Classes</PackageTags>
-    <AssemblyVersion>1.0.29.0</AssemblyVersion>
-    <FileVersion>1.0.29.0</FileVersion>
+    <AssemblyVersion>1.0.29.1</AssemblyVersion>
+    <FileVersion>1.0.29.1</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
