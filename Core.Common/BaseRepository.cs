@@ -22,7 +22,7 @@ namespace Core.Common
         /// Constructor
         /// </summary>
         /// <param name="dataContext"></param>
-         protected BaseRepository(DbContext dataContext, IRestToLinqParser<T> parser, ILogger<BaseRepository<T>> logger) : base(dataContext, parser, logger)
+         protected BaseRepository(DbContext dataContext, IRestToLinqParser<T> parser, ILogger<IRepository<T>> logger) : base(dataContext, parser, logger)
         {
         }
         public virtual async Task<T> Add(T entity)

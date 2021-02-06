@@ -19,7 +19,7 @@ namespace Core.Common
     {
 
         protected readonly DbContext dataContext;
-        protected readonly ILogger<Common.BaseRepository<T>> logger;
+        protected readonly ILogger<IReadRepository<T>> logger;
         protected readonly IRestToLinqParser<T> restParser;
         protected readonly DbSet<T> dbset;
         protected List<string> includes;
@@ -28,7 +28,7 @@ namespace Core.Common
         /// Constructor
         /// </summary>
         /// <param name="dataContext"></param>
-         protected BaseReadRepository(DbContext dataContext, IRestToLinqParser<T> parser, ILogger<BaseRepository<T>> logger)
+         protected BaseReadRepository(DbContext dataContext, IRestToLinqParser<T> parser, ILogger<IReadRepository<T>> logger)
         {
             this.logger = logger;
             this.logger.LogInformation($"Creating Repository {this.GetType().Name}");
