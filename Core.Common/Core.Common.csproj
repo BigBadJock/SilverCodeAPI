@@ -13,8 +13,9 @@
     <Authors>SilverCode Solutions Ltd</Authors>
     <Company>SilverCode Solutions Ltd</Company>
     <Copyright>2020</Copyright>
-    <Version>1.0.29.1</Version>
-    <PackageReleaseNotes>1.0.29.1 - fix some warnings
+    <Version>1.0.30</Version>
+    <PackageReleaseNotes>1.0.30 - add ReadRepository
+1.0.29.1 - fix some warnings
 1.0.29.0 - Update version of RestParser
 1.0.28.0 - Update version of RestParser
 1.0.27.0 - Update version of RestParser

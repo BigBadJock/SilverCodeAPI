@@ -8,20 +8,8 @@ using System.Threading.Tasks;
 
 namespace Core.Common.Contracts
 {
-    public interface IRepository<T> where T : class, IModel, new()
+    public interface IRepository<T> : IReadRepository<T> where T : class, IModel, new() 
     {
-
-        DbSet<T>  DbSet{ get;  }
-
-        bool AlwaysIncludeChildren { get; set; }
-
-        #region get by id
-        Task<T> GetById(Guid id, bool includeChildren = false);
-        #endregion
-
-        IQueryable<T> GetAll();
-        RestResult<T> GetAll(string restQuery);
-
         #region update
         Task<T> Add(T entity);
         Task<T> Update(T entity);

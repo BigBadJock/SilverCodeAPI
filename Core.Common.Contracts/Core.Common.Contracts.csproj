@@ -9,7 +9,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>1.0.18</Version>
+    <Version>1.0.19</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>SilverCode Solutions Ltd</Authors>
     <Company>SilverCode Solutions Ltd</Company>
@@ -19,7 +19,8 @@
     <RepositoryUrl>https://github.com/BigBadJock/SilverCodeAPI</RepositoryUrl>
     <RepositoryType>https://github.com/BigBadJock/SilverCodeAPI</RepositoryType>
     <PackageTags>API, Interfaces</PackageTags>
-    <PackageReleaseNotes>1.0.18 - Update version of RestParser
+    <PackageReleaseNotes>1.0.19 - Add IReadRepository
+1.0.18 - Update version of RestParser
 1.0.17 - Update version of RestParser
 1.0.16 - Added includeChildren flag on IRepository.GetById
 1.0.15 - Change model id to GUID
@@ -34,8 +35,8 @@
 1.0.6 - Added Core.Common.DataModels, and RefreshToken etc
 1.0.5 - Added BaseDataService and IDataService
 Bumped version</PackageReleaseNotes>
-    <AssemblyVersion>1.0.18.0</AssemblyVersion>
-    <FileVersion>1.0.18.0</FileVersion>
+    <AssemblyVersion>1.0.19.0</AssemblyVersion>
+    <FileVersion>1.0.19.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

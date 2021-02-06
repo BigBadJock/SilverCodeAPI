@@ -10,12 +10,15 @@
     <RepositoryUrl>https://github.com/BigBadJock/SilverCodeAPI</RepositoryUrl>
     <PackageTags>API, DataModels, Base Classes</PackageTags>
     <Copyright>2020</Copyright>
-    <Version>1.0.5</Version>
-    <PackageReleaseNotes>1.0.5 - Add Refresh Token Expiry to JWTSettings
+    <Version>1.0.6</Version>
+    <PackageReleaseNotes>1.0.6 - Set identity on id column of BaseModel
+1.0.5 - Add Refresh Token Expiry to JWTSettings
 1.0.4  - Change model id to GUID
 1.0.3 added comments to base model for swagger
 1.0.2 - remove UserClaim
 1.0.1 - Updated CustomClaimTyp and UserClaim</PackageReleaseNotes>
+    <AssemblyVersion>1.0.6.0</AssemblyVersion>
+    <FileVersion>1.0.6.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

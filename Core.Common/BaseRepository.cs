@@ -15,67 +15,16 @@ using System.Threading.Tasks;
 
 namespace Core.Common
 {
-    public abstract class BaseRepository<T> : IRepository<T> where T : class, IModel, new()
+    public abstract class BaseRepository<T> : BaseReadRepository<T>, IRepository<T> where T : class, IModel, new()
     {
-
-        private readonly DbContext dataContext;
-        private readonly ILogger<Common.BaseRepository<T>> logger;
-        private readonly IRestToLinqParser<T> restParser;
-        private readonly DbSet<T> dbset;
-        private List<string> includes;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="dataContext"></param>
-         protected BaseRepository(DbContext dataContext, IRestToLinqParser<T> parser, ILogger<BaseRepository<T>> logger)
+         protected BaseRepository(DbContext dataContext, IRestToLinqParser<T> parser, ILogger<BaseRepository<T>> logger) : base(dataContext, parser, logger)
         {
-            this.logger = logger;
-            this.logger.LogInformation($"Creating Repository {this.GetType().Name}");
-            this.dataContext = dataContext;
-            this.restParser = parser;
-            dbset = DataContext.Set<T>();
-
-            var props = typeof(T).GetProperties().ToList();
-            
-            GetIncludes(props);
         }
-
-        public bool AlwaysIncludeChildren { get; set; }
-
-        private void GetIncludes(List<PropertyInfo> props)
-        {
-            this.includes = new List<string>();
-            props.ForEach(prop =>
-            {
-                try
-                {
-                    {
-
-                        if (prop.PropertyType.IsGenericType)
-                        {
-                            this.logger.LogInformation($"adding property collection: {prop.Name}");
-                            this.includes.Add(prop.Name);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    this.logger.LogError($"error checking property type: {prop.PropertyType} error: {ex.Message}");
-
-                }
-
-
-            });
-        }
-
-        protected DbContext DataContext
-        {
-            get { return dataContext; }
-        }
-
-        public DbSet<T> DbSet => dbset;
-
         public virtual async Task<T> Add(T entity)
         {
             try
@@ -140,33 +89,6 @@ namespace Core.Common
             }
         }
 
-        public virtual IQueryable<T> GetAll()
-        {
-            var dbResult = GetAllData();
-
-            return dbResult;
-        }
-
-        public RestResult<T> GetAll(string restQuery)
-        {
-            this.logger.LogInformation($"Repository: {this.GetType().Name} running restQuery: {restQuery}");
-
-            var dbResult = GetAllData();
-
-            RestResult<T> result = this.restParser.Run(dbResult, restQuery);
-
-
-            return result;
-        }
-
-        public virtual async Task<T> GetById(Guid id, bool includeChildren = false)
-        {
-            var dbResult = GetAllData(includeChildren);
-            T result = await dbResult.Where(s => s.Id == id).FirstOrDefaultAsync().ConfigureAwait(false);
-
-            return result;
-        }
-
         public virtual async Task<T> Update(T entity)
         {
             try
@@ -183,19 +105,6 @@ namespace Core.Common
                 this.logger.LogError($"Repository: {this.GetType().Name} failed throwing exception: {e} when trying to update entity: {JsonConvert.SerializeObject(entity)}", e);
                 throw;
             }
-        }
-
-        private IQueryable<T> GetAllData(bool includeForCall = false)
-        {
-            var dbResult = dbset.AsQueryable();
-            if (this.AlwaysIncludeChildren || includeForCall)
-            {
-                foreach (var inc in this.includes)
-                {
-                    dbResult = dbResult.Include(inc);
-                }
-            }
-            return dbResult;
         }
     }
 }
