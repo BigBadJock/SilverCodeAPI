@@ -20,7 +20,7 @@ namespace Core.Common.DataModels
         /// </summary>
         /// <example>false</example>
         [Editable(false)]
-        public bool IsDeleted { get; set; }
+        public bool IsDeleted { get; set; } 
 
         /// <summary>
         /// Date & Time entity created
@@ -42,6 +42,7 @@ namespace Core.Common.DataModels
 
         public BaseModel()
         {
+            Id = Guid.NewGuid();
             IsDeleted = false;
             Created = DateTime.Now;
             LastUpdated = DateTime.Now;
