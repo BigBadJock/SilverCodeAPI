@@ -1,5 +1,6 @@
 ﻿using Ardalis.GuardClauses;
 using Core.Common.Contracts;
+using Core.Common.DataModels;
 using Core.Common.DataModels.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -83,16 +84,22 @@ namespace Core.Common
             return dbResult;
         }
 
-        public RestResult<T> GetAll(string restQuery)
+        public ApiResult<T> GetAll(string restQuery)
         {
             this.logger.LogInformation($"Repository: {this.GetType().Name} running restQuery: {restQuery}");
 
             var dbResult = GetAllData();
 
-            RestResult<T> result = this.restParser.Run(dbResult, restQuery);
+            RestResult<T> restResult = this.restParser.Run(dbResult, restQuery);
 
+            ApiResult<T> apiResult = new ApiResult<T>();
+            apiResult.Data = restResult.Data.ToList();
+            if (restResult.PageSize > 0)
+            {
+                apiResult.Pagination = new Pagination { PageSize = restResult.PageSize, PageNumber = restResult.Page, PageCount = restResult.PageCount, TotalCount = restResult.TotalCount };
+            }
 
-            return result;
+            return apiResult;
         }
 
         public virtual async Task<T> GetById(Guid id, bool includeChildren = false)

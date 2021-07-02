@@ -1,5 +1,5 @@
-﻿using Core.Common.DataModels.Interfaces;
-using REST_Parser.Models;
+﻿using Core.Common.DataModels;
+using Core.Common.DataModels.Interfaces;
 using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -14,7 +14,7 @@ namespace Core.Common.Contracts
 
         Task<bool> Delete(Expression<Func<T, bool>> where);
         Task<T> GetById(Guid id);
-        RestResult<T> Search(string restQuery);
+        ApiResult<T> Search(string restQuery);
         
     }
 }

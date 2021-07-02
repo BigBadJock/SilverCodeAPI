@@ -1,4 +1,5 @@
-﻿using Core.Common.DataModels.Interfaces;
+﻿using Core.Common.DataModels;
+using Core.Common.DataModels.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using REST_Parser.Models;
 using System;
@@ -20,6 +21,6 @@ namespace Core.Common.Contracts
         #endregion
 
         IQueryable<T> GetAll();
-        RestResult<T> GetAll(string restQuery);
+        ApiResult<T> GetAll(string restQuery);
     }
 }

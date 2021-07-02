@@ -13,8 +13,9 @@
     <Authors>SilverCode Solutions Ltd</Authors>
     <Company>SilverCode Solutions Ltd</Company>
     <Copyright>2020</Copyright>
-    <Version>1.0.31</Version>
-    <PackageReleaseNotes>1.0.31 - change logger on repository
+    <Version>1.0.33</Version>
+    <PackageReleaseNotes>1.0.32 - Return ApiResult instead of RestResult
+1.0.31 - change logger on repository
 1.0.30 - add ReadRepository
 1.0.29.1 - fix some warnings
 1.0.29.0 - Update version of RestParser
@@ -55,8 +56,8 @@
     <RepositoryUrl>https://github.com/BigBadJock/SilverCodeAPI</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>API, Base Classes</PackageTags>
-    <AssemblyVersion>1.0.31.1</AssemblyVersion>
-    <FileVersion>1.0.31.1</FileVersion>
+    <AssemblyVersion>1.0.32.0</AssemblyVersion>
+    <FileVersion>1.0.32.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
