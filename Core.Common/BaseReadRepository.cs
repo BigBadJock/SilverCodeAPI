@@ -19,7 +19,7 @@ namespace Core.Common
     public abstract class BaseReadRepository<T> : IReadRepository<T> where T : class, IModel, new()
     {
 
-        protected readonly DbContext dataContext;
+        protected readonly DbContext dataContext; // data context
         protected readonly ILogger<IReadRepository<T>> logger;
         protected readonly IRestToLinqParser<T> restParser;
         protected readonly DbSet<T> dbset;
