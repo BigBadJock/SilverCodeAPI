@@ -1,5 +1,7 @@
-﻿using Core.Common.DataModels.Interfaces;
-using REST_Parser.Models;
+﻿using Core.Common.DataModels;
+using Core.Common.DataModels.Interfaces;
+using System;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Core.Common.Contracts
@@ -9,8 +11,10 @@ namespace Core.Common.Contracts
         Task<T> Add(T model);
         Task<T> Update(T model);
         Task<bool> Delete(T model);
-        Task<T> GetById(int id);
-        RestResult<T> Search(string restQuery);
+
+        Task<bool> Delete(Expression<Func<T, bool>> where);
+        Task<T> GetById(Guid id);
+        ApiResult<T> Search(string restQuery);
         
     }
 }

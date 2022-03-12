@@ -10,38 +10,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Core.Common
 {
-    public abstract class BaseRepository<T> : IRepository<T> where T : class, IModel, new()
+    public abstract class BaseRepository<T> : BaseReadRepository<T>, IRepository<T> where T : class, IModel, new()
     {
-
-        private DbContext dataContext;
-        private ILogger<Common.BaseRepository<T>> logger;
-        private readonly IRestToLinqParser<T> restParser;
-        private readonly DbSet<T> dbset;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="dataContext"></param>
-         protected BaseRepository(DbContext dataContext, IRestToLinqParser<T> parser, ILogger<BaseRepository<T>> logger)
+         protected BaseRepository(DbContext dataContext, IRestToLinqParser<T> parser, ILogger<IRepository<T>> logger) : base(dataContext, parser, logger)
         {
-            this.logger = logger;
-            this.logger.LogInformation($"Creating Repository {this.GetType().Name}");
-            this.dataContext = dataContext;
-            this.restParser = parser;
-            dbset = DataContext.Set<T>();
         }
-
-        protected DbContext DataContext
-        {
-            get { return dataContext; }
-        }
-
-        public DbSet<T> DbSet => dbset;
-
         public virtual async Task<T> Add(T entity)
         {
             try
@@ -106,30 +89,6 @@ namespace Core.Common
             }
         }
 
-        public virtual IQueryable<T> GetAll()
-        {
-            return dbset;
-        }
-
-        public RestResult<T> GetAll(string restQuery)
-        {
-            this.logger.LogInformation($"Repository: {this.GetType().Name} running restQuery: {restQuery}");
-            RestResult<T> result = this.restParser.Run(this.dbset, restQuery);
-
-            //foreach (var property in this.dataContext.Model.FindEntityType(typeof(T)).GetNavigations())
-            //    result.Data = result.Data.Include(property.Name);
-
-            return result;
-        }
-
-        public virtual async Task<T> GetById(long id)
-        {
-            T result = await dbset.Where(s => s.Id == id).FirstOrDefaultAsync().ConfigureAwait(false);
-            this.logger.LogInformation($"Repository: {this.GetType().Name} retrieving by Id: {id} value: {JsonConvert.SerializeObject(result)}");
-
-            return result;
-        }
-
         public virtual async Task<T> Update(T entity)
         {
             try
@@ -147,7 +106,5 @@ namespace Core.Common
                 throw;
             }
         }
-
-
     }
 }

@@ -5,6 +5,7 @@ namespace Core.Common.DataModels
 {
     public class Credentials
     {
+
         [Required]
         [EmailAddress]
         [DisplayName("Email")]

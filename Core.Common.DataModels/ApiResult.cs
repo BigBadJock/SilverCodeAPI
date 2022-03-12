@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Core.Common
+namespace Core.Common.DataModels
 {
     public class ApiResult<T>
     {
