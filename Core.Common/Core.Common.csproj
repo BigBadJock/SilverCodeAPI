@@ -12,8 +12,8 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>SilverCode Solutions Ltd</Authors>
     <Company>SilverCode Solutions Ltd</Company>
-    <Copyright>2020</Copyright>
-    <Version>1.0.33</Version>
+    <Copyright>2022</Copyright>
+    <Version>1.0.34</Version>
     <PackageReleaseNotes>1.0.32 - Return ApiResult instead of RestResult
 1.0.31 - change logger on repository
 1.0.30 - add ReadRepository
