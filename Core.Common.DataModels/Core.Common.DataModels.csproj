@@ -1,31 +1,33 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Authors>SilverCode Solutions Ltd</Authors>
-    <Company>SilverCode Solutions Ltd</Company>
+    <TargetFramework>net6.0</TargetFramework>
+    <Authors>John McArthur</Authors>
+    <Company>John McArthur</Company>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RepositoryType>GitHub</RepositoryType>
     <PackageProjectUrl>https://github.com/BigBadJock/SilverCodeAPI</PackageProjectUrl>
     <RepositoryUrl>https://github.com/BigBadJock/SilverCodeAPI</RepositoryUrl>
     <PackageTags>API, DataModels, Base Classes</PackageTags>
     <Copyright>2022</Copyright>
-    <Version>1.0.10</Version>
-    <PackageReleaseNotes>1.0.8 - Add ApiResult and Pagination
-1.0.7 - Default guid to new Guid
-1.0.6 - Set identity on id column of BaseModel
-1.0.5 - Add Refresh Token Expiry to JWTSettings
-1.0.4  - Change model id to GUID
-1.0.3 added comments to base model for swagger
-1.0.2 - remove UserClaim
-1.0.1 - Updated CustomClaimTyp and UserClaim</PackageReleaseNotes>
-    <AssemblyVersion>1.0.10.0</AssemblyVersion>
-    <FileVersion>1.0.10.0</FileVersion>
+    <Version>1.1.0</Version>
+    <PackageReleaseNotes>
+      1.1.0 - Update to DotNet 6
+      1.0.8 - Add ApiResult and Pagination
+      1.0.7 - Default guid to new Guid
+      1.0.6 - Set identity on id column of BaseModel
+      1.0.5 - Add Refresh Token Expiry to JWTSettings
+      1.0.4  - Change model id to GUID
+      1.0.3 added comments to base model for swagger
+      1.0.2 - remove UserClaim
+      1.0.1 - Updated CustomClaimTyp and UserClaim
+    </PackageReleaseNotes>
+    <AssemblyVersion>1.1.0</AssemblyVersion>
+    <FileVersion>1.1.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.3" />
   </ItemGroup>
 
 </Project>
