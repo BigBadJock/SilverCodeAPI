@@ -9,7 +9,7 @@ namespace Core.Common
     public abstract class BaseDataServiceWithGuidId<T> : BaseDataService<T>, IDataServiceWithGuidId<T> where T : class, IModel, IModelWithGuidId, new()
     {
 
-        public BaseDataServiceWithGuidId(IRepositoryWithGuidId<T> repository, ILogger<T> logger) : base((IRepository<T>)repository, (ILogger<T>)logger)
+        public BaseDataServiceWithGuidId(IRepositoryWithGuidId<T> repository, ILogger<IDataServiceWithGuidId<T>> logger) : base(repository, logger)
         {
             this.logger.LogInformation($"Creating DataService {this.GetType().Name}");
         }

@@ -11,9 +11,9 @@ namespace Core.Common
     public abstract class BaseDataService<T> : IDataService<T> where T : class, IModel, new()
     {
         protected IRepository<T> repository;
-        protected ILogger<T> logger;
+        protected ILogger<IDataService<T>> logger;
 
-        public BaseDataService(IRepository<T> repository, ILogger<T> logger)
+        public BaseDataService(IRepository<T> repository, ILogger<IDataService<T>> logger)
         {
             this.repository = repository;
             this.logger = logger;
