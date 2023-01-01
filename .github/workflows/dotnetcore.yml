@@ -47,4 +47,4 @@ jobs:
         nupkg-path: './finalpackage/*.nupkg'
         repo-owner: bigbadjock 
         gh-user: bigbadjock
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{secrets.GITHUB_TOKEN}}
