@@ -2,7 +2,6 @@
 using Core.Common.DataModels;
 using Core.Common.DataModels.Interfaces;
 using Microsoft.Extensions.Logging;
-using REST_Parser.Models;
 using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -77,25 +76,6 @@ namespace Core.Common
             }
         }
 
-        public virtual async Task<T> GetById(Guid id)
-        {
-            try
-            {
-                this.logger.LogInformation($"DataService: {this.GetType().Name} getting by id: ${id}");
-                return await this.repository.GetById(id);
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogError($"DataService: {this.GetType().Name} error getting by id: ${ex.Message}");
-                throw;
-            }
-            finally
-            {
-                this.logger.LogInformation($"DataService: {this.GetType().Name} exiting getting by id: ${id}");
-            }
-
-        }
-
         public virtual ApiResult<T> Search(string restQuery)
         {
             try
@@ -116,7 +96,7 @@ namespace Core.Common
 
         public virtual async Task<T> Update(T model)
         {
-           try
+            try
             {
                 this.logger.LogInformation($"DataService: {this.GetType().Name} updating entity");
                 return await this.repository.Update(model);

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <Authors>John McArthur</Authors>
     <Company>John McArthur</Company>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -9,9 +9,10 @@
     <PackageProjectUrl>https://github.com/BigBadJock/SilverCodeAPI</PackageProjectUrl>
     <RepositoryUrl>https://github.com/BigBadJock/SilverCodeAPI</RepositoryUrl>
     <PackageTags>API, DataModels, Base Classes</PackageTags>
-    <Copyright>2022</Copyright>
-    <Version>1.1.0</Version>
+    <Copyright>2023</Copyright>
+    <Version>1.2.0</Version>
     <PackageReleaseNotes>
+      1.2.0 - Add GuidId, IntId, StringId. Add AddBatch to repository. Update to DotNet 7
       1.1.0 - Update to DotNet 6
       1.0.8 - Add ApiResult and Pagination
       1.0.7 - Default guid to new Guid
@@ -22,12 +23,12 @@
       1.0.2 - remove UserClaim
       1.0.1 - Updated CustomClaimTyp and UserClaim
     </PackageReleaseNotes>
-    <AssemblyVersion>1.1.0</AssemblyVersion>
-    <FileVersion>1.1.0</FileVersion>
+    <AssemblyVersion>1.2.0</AssemblyVersion>
+    <FileVersion>1.2.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.1" />
   </ItemGroup>
 
 </Project>

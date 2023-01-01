@@ -8,13 +8,14 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>John McArthur</Authors>
     <Company>John McArthur</Company>
-    <Copyright>2022</Copyright>
-    <Version>1.1.0</Version>
+    <Copyright>2023</Copyright>
+    <Version>1.2.0</Version>
     <PackageReleaseNotes>
+      1.2.0 - Add GuidId, IntId, StringId. Add AddBatch to repository. Update to DotNet 7
       1.1.0 - Update to DotNet 6
       1.0.32 - Return ApiResult instead of RestResult
       1.0.31 - change logger on repository
@@ -31,7 +32,7 @@
       1.0.24.11 - log where adding includes to getById
       1..0.24.10 - change conditions again
       1.0.24.9 - change ifs again
-      1.0.24.8 - log exception 
+      1.0.24.8 - log exception
       1.0.24.7 - initialise list
       1.0.24.5 - Added exception checking
       1.0.24.5 - Changed collection check &amp; logging
@@ -58,18 +59,18 @@
     <RepositoryUrl>https://github.com/BigBadJock/SilverCodeAPI</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>API, Base Classes</PackageTags>
-    <AssemblyVersion>1.1.0</AssemblyVersion>
-    <FileVersion>1.1.0</FileVersion>
+    <AssemblyVersion>1.2.0</AssemblyVersion>
+    <FileVersion>1.2.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Ardalis.GuardClauses" Version="4.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.3" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="REST-Parser" Version="1.1.0" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.17.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.25.1" />
   </ItemGroup>
 
   <ItemGroup>

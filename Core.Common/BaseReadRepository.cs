@@ -1,18 +1,14 @@
-﻿using Ardalis.GuardClauses;
-using Core.Common.Contracts;
+﻿using Core.Common.Contracts;
 using Core.Common.DataModels;
 using Core.Common.DataModels.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using REST_Parser;
 using REST_Parser.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Core.Common
 {
@@ -29,7 +25,7 @@ namespace Core.Common
         /// Constructor
         /// </summary>
         /// <param name="dataContext"></param>
-         protected BaseReadRepository(DbContext dataContext, IRestToLinqParser<T> parser, ILogger<IReadRepository<T>> logger)
+        protected BaseReadRepository(DbContext dataContext, IRestToLinqParser<T> parser, ILogger<IReadRepository<T>> logger)
         {
             this.logger = logger;
             this.logger.LogInformation($"Creating Repository {this.GetType().Name}");
@@ -38,7 +34,7 @@ namespace Core.Common
             dbset = DataContext.Set<T>();
 
             var props = typeof(T).GetProperties().ToList();
-            
+
             GetIncludes(props);
         }
 
@@ -100,14 +96,6 @@ namespace Core.Common
             }
 
             return apiResult;
-        }
-
-        public virtual async Task<T> GetById(Guid id, bool includeChildren = false)
-        {
-            var dbResult = GetAllData(includeChildren);
-            T result = await dbResult.Where(s => s.Id == id).FirstOrDefaultAsync().ConfigureAwait(false);
-
-            return result;
         }
 
         private IQueryable<T> GetAllData(bool includeForCall = false)

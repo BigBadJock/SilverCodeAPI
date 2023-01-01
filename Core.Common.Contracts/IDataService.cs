@@ -13,8 +13,7 @@ namespace Core.Common.Contracts
         Task<bool> Delete(T model);
 
         Task<bool> Delete(Expression<Func<T, bool>> where);
-        Task<T> GetById(Guid id);
         ApiResult<T> Search(string restQuery);
-        
+
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Core.Common.DataModels
 {
-    public class CustomClaimType: BaseModel
+    public class CustomClaimType : BaseModelWithIntId, ILookupModel
     {
         public string Name { get; set; }
     }

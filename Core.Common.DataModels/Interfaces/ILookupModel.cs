@@ -1,6 +1,6 @@
 ﻿namespace Core.Common.DataModels.Interfaces
 {
-    public interface ILookupModel : IModel
+    public interface ILookupModel : IModelWithIntId
     {
         string Name { get; set; }
     }

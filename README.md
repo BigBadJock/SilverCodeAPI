@@ -11,7 +11,7 @@ update readme to test github actions
 # Using GitHub packages
 
 1. Get a token from Github/Settings/Developer Settings/Personal Access Tokens/
-1. Run nuget setApiKey <accesstoken> -source github
+1. Run `nuget setApiKey <accesstoken> -source github`
 1. Add nuget.Config - ensure that nuget.config is added to .gitIgnore
 
 ```
