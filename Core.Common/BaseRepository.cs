@@ -14,14 +14,16 @@ using System.Threading.Tasks;
 
 namespace Core.Common
 {
-    public abstract class BaseRepository<T> : BaseReadRepository<T>, IRepository<T>, IReadRepository<T> where T : class, IModel, new()
+    public abstract class BaseRepository<DBC, T> : BaseReadRepository<DBC, T>, IRepository<DBC, T>, IReadRepository<DBC, T>
+        where T : class, IModel, new()
+        where DBC : DbContext
     {
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="dataContext"></param>
-        protected BaseRepository(DbContext dataContext, IRestToLinqParser<T> parser, ILogger<IRepository<T>> logger) : base(dataContext, parser, logger)
+        protected BaseRepository(IDbContextFactory<DBC> dbContextFactory, IRestToLinqParser<T> parser, ILogger<IRepository<DBC, T>> logger) : base(dbContextFactory, parser, logger)
         {
         }
         public virtual async Task<T> Add(T entity, bool commit = true)

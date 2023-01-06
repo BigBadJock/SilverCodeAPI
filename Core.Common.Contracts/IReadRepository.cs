@@ -5,7 +5,9 @@ using System.Linq;
 
 namespace Core.Common.Contracts
 {
-    public interface IReadRepository<T> where T : class, IModel, new()
+    public interface IReadRepository<DBC, T>
+        where T : class, IModel, new()
+        where DBC : DbContext
     {
 
         DbSet<T> DbSet { get; }

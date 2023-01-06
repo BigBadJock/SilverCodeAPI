@@ -12,11 +12,13 @@ using System.Reflection;
 
 namespace Core.Common
 {
-    public abstract class BaseReadRepository<T> : IReadRepository<T> where T : class, IModel, new()
+    public abstract class BaseReadRepository<DBC, T> : IReadRepository<DBC, T>
+        where T : class, IModel, new()
+        where DBC : DbContext
     {
 
         protected readonly DbContext dataContext; // data context
-        protected readonly ILogger<IReadRepository<T>> logger;
+        protected readonly ILogger<IReadRepository<DBC, T>> logger;
         protected readonly IRestToLinqParser<T> restParser;
         protected readonly DbSet<T> dbset;
         protected List<string> includes;
@@ -25,11 +27,11 @@ namespace Core.Common
         /// Constructor
         /// </summary>
         /// <param name="dataContext"></param>
-        protected BaseReadRepository(DbContext dataContext, IRestToLinqParser<T> parser, ILogger<IReadRepository<T>> logger)
+        protected BaseReadRepository(IDbContextFactory<DBC> dbcFactory, IRestToLinqParser<T> parser, ILogger<IReadRepository<DBC, T>> logger)
         {
             this.logger = logger;
             this.logger.LogInformation($"Creating Repository {this.GetType().Name}");
-            this.dataContext = dataContext;
+            this.dataContext = dbcFactory.CreateDbContext();
             this.restParser = parser;
             dbset = DataContext.Set<T>();
 

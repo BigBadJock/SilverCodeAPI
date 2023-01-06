@@ -1,9 +1,10 @@
 ﻿using Core.Common.DataModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace Core.Common.Contracts
 {
-    public interface ICustomClaimTypeRepository : IRepository<CustomClaimType>
+    public interface ICustomClaimTypeRepository<DBC> : IRepository<DBC, CustomClaimType>
+        where DBC : DbContext
     {
-        
     }
 }

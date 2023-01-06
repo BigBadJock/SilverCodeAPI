@@ -1,15 +1,18 @@
 ﻿using Core.Common.Contracts;
 using Core.Common.DataModels.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 
 namespace Core.Common
 {
-    public abstract class BaseDataServiceWithIntId<T> : BaseDataService<T>, IDataServiceWithIntId<T> where T : class, IModel, IModelWithIntId, new()
+    public abstract class BaseDataServiceWithIntId<DBC, T> : BaseDataService<DBC, T>, IDataServiceWithIntId<DBC, T>
+        where T : class, IModel, IModelWithIntId, new()
+        where DBC : DbContext
     {
 
-        public BaseDataServiceWithIntId(IRepositoryWithIntId<T> repository, ILogger<IDataServiceWithIntId<T>> logger) : base(repository, logger)
+        public BaseDataServiceWithIntId(IRepositoryWithIntId<DBC, T> repository, ILogger<IDataServiceWithIntId<DBC, T>> logger) : base(repository, logger)
         {
             this.logger.LogInformation($"Creating DataService {this.GetType().Name}");
         }
@@ -19,7 +22,7 @@ namespace Core.Common
             try
             {
                 this.logger.LogInformation($"DataService: {this.GetType().Name} getting entity by id");
-                IRepositoryWithIntId<T> rep = (IRepositoryWithIntId<T>)this.repository;
+                IRepositoryWithIntId<DBC, T> rep = (IRepositoryWithIntId<DBC, T>)this.repository;
                 return await rep.GetById(id);
             }
             catch (Exception ex)

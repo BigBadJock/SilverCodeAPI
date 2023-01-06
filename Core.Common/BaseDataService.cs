@@ -1,6 +1,7 @@
 ﻿using Core.Common.Contracts;
 using Core.Common.DataModels;
 using Core.Common.DataModels.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq.Expressions;
@@ -8,12 +9,14 @@ using System.Threading.Tasks;
 
 namespace Core.Common
 {
-    public abstract class BaseDataService<T> : IDataService<T> where T : class, IModel, new()
+    public abstract class BaseDataService<DBC, T> : IDataService<DBC, T>
+        where T : class, IModel, new()
+        where DBC : DbContext
     {
-        protected IRepository<T> repository;
-        protected ILogger<IDataService<T>> logger;
+        protected IRepository<DBC, T> repository;
+        protected ILogger<IDataService<DBC, T>> logger;
 
-        public BaseDataService(IRepository<T> repository, ILogger<IDataService<T>> logger)
+        public BaseDataService(IRepository<DBC, T> repository, ILogger<IDataService<DBC, T>> logger)
         {
             this.repository = repository;
             this.logger = logger;

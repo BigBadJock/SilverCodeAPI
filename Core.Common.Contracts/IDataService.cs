@@ -1,12 +1,15 @@
 ﻿using Core.Common.DataModels;
 using Core.Common.DataModels.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Core.Common.Contracts
 {
-    public interface IDataService<T> where T : class, IModel, new()
+    public interface IDataService<DBC, T>
+        where T : class, IModel, new()
+        where DBC : DbContext
     {
         Task<T> Add(T model);
         Task<T> Update(T model);

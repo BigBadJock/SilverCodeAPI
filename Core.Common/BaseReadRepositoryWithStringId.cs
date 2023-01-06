@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 
 namespace Core.Common
 {
-    public abstract class BaseReadRepositoryWithStringId<T> : BaseReadRepository<T>, IReadRepositoryWithStringId<T> where T : class, IModel, IModelWithStringId, new()
+    public abstract class BaseReadRepositoryWithStringId<DBC, T> : BaseReadRepository<DBC, T>, IReadRepositoryWithStringId<DBC, T>
+        where T : class, IModel, IModelWithStringId, new()
+        where DBC : DbContext
     {
 
-        public BaseReadRepositoryWithStringId(DbContext dataContext, IRestToLinqParser<T> parser, ILogger<IReadRepositoryWithStringId<T>> logger) : base(dataContext, parser, logger)
+        public BaseReadRepositoryWithStringId(IDbContextFactory<DBC> dbcFactory, IRestToLinqParser<T> parser, ILogger<IReadRepositoryWithStringId<DBC, T>> logger) : base(dbcFactory, parser, logger)
         {
 
         }
