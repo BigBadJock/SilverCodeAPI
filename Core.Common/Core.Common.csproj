@@ -13,8 +13,9 @@
     <Authors>John McArthur</Authors>
     <Company>John McArthur</Company>
     <Copyright>2023</Copyright>
-    <Version>1.2.3</Version>
+    <Version>1.2.4</Version>
     <PackageReleaseNotes>
+      1.2.4 - Update Rest Parser version
       1.2.3 - Change to use IDBContextFactory
       1.2.2 - Fix bug with DataService logger 
       1.2.1 - Update Rest Parser version
@@ -62,8 +63,8 @@
     <RepositoryUrl>https://github.com/BigBadJock/SilverCodeAPI</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>API, Base Classes</PackageTags>
-    <AssemblyVersion>1.2.3</AssemblyVersion>
-    <FileVersion>1.2.3</FileVersion>
+    <AssemblyVersion>1.2.4</AssemblyVersion>
+    <FileVersion>1.2.4</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -72,7 +73,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-    <PackageReference Include="REST-Parser" Version="1.2.1" />
+    <PackageReference Include="REST-Parser" Version="1.2.2" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.25.1" />
   </ItemGroup>
 
