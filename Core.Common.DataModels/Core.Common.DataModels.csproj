@@ -9,9 +9,10 @@
     <PackageProjectUrl>https://github.com/BigBadJock/SilverCodeAPI</PackageProjectUrl>
     <RepositoryUrl>https://github.com/BigBadJock/SilverCodeAPI</RepositoryUrl>
     <PackageTags>API, DataModels, Base Classes</PackageTags>
-    <Copyright>2023</Copyright>
-    <Version>1.2.0</Version>
+    <Copyright>2025</Copyright>
+    <Version>1.2.5</Version>
     <PackageReleaseNotes>
+      1.2.5 - upgradge to net9.0
       1.2.0 - Add GuidId, IntId, StringId. Add AddBatch to repository. Update to DotNet 7
       1.1.0 - Update to DotNet 6
       1.0.8 - Add ApiResult and Pagination
