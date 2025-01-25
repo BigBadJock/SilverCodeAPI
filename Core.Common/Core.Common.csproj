@@ -13,12 +13,13 @@
     <Authors>John McArthur</Authors>
     <Company>John McArthur</Company>
     <Copyright>2025</Copyright>
-    <Version>1.2.5</Version>
+    <Version>1.2.6</Version>
     <PackageReleaseNotes>
+      1.2.6 - Removed some old code
       1.2.5 - Update to dotnet 9
       1.2.4 - Update Rest Parser version
       1.2.3 - Change to use IDBContextFactory
-      1.2.2 - Fix bug with DataService logger 
+      1.2.2 - Fix bug with DataService logger
       1.2.1 - Update Rest Parser version
       1.2.0 - Add GuidId, IntId, StringId. Add AddBatch to repository. Update to DotNet 7
       1.1.0 - Update to DotNet 6
