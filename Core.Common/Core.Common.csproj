@@ -13,7 +13,7 @@
     <Authors>John McArthur</Authors>
     <Company>John McArthur</Company>
     <Copyright>2025</Copyright>
-    <Version>1.2.6</Version>
+    <Version>1.2025.202.28</Version>
     <PackageReleaseNotes>
       1.2.6 - Removed some old code
       1.2.5 - Update to dotnet 9
@@ -67,6 +67,7 @@
     <PackageTags>API, Base Classes</PackageTags>
     <AssemblyVersion>1.2.4</AssemblyVersion>
     <FileVersion>1.2.4</FileVersion>
+    <IncrementVersionOnBuild>1.yyyy.Mdd.Hmm</IncrementVersionOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
