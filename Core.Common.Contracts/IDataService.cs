@@ -13,8 +13,6 @@ namespace Core.Common.Contracts
     {
         Task<T> Add(T model);
         Task<T> Update(T model);
-        Task<bool> Delete(T model);
-
         Task<bool> Delete(Expression<Func<T, bool>> where);
         ApiResult<T> Search(string restQuery);
 

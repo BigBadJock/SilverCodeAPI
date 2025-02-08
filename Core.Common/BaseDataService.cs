@@ -43,24 +43,6 @@ namespace Core.Common
 
         }
 
-        public virtual async Task<bool> Delete(T model)
-        {
-            try
-            {
-                this.logger.LogInformation($"DataService: {this.GetType().Name} deleting entity");
-                return await this.repository.Delete(model);
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogError($"DataService: {this.GetType().Name} error deleting entity: ${ex.Message}");
-                throw;
-            }
-            finally
-            {
-                this.logger.LogInformation($"DataService: {this.GetType().Name} exiting delete entity");
-            }
-        }
-
         public virtual async Task<bool> Delete(Expression<Func<T, bool>> where)
         {
             try

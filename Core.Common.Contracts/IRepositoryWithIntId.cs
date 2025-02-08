@@ -1,5 +1,6 @@
 ﻿using Core.Common.DataModels.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace Core.Common.Contracts
 {
@@ -7,5 +8,7 @@ namespace Core.Common.Contracts
         where T : class, IModel, IModelWithIntId, new()
         where DBC : DbContext
     {
+        Task<bool> Delete(int id, bool commit = true);
+
     }
 }

@@ -18,7 +18,7 @@
     <RepositoryUrl>https://github.com/BigBadJock/SilverCodeAPI</RepositoryUrl>
     <RepositoryType>https://github.com/BigBadJock/SilverCodeAPI</RepositoryType>
     <PackageTags>API, Interfaces</PackageTags>
-    <Version>1.2025.202.28</Version>
+    <Version>1.2025.208.1321</Version>
     <PackageReleaseNotes>
       1.2.6 - Removed some old code
       1.2.5 - Update to dotnet 9

@@ -10,5 +10,6 @@ namespace Core.Common.Contracts
         where DBC : DbContext
     {
         Task<T> GetById(Guid id);
+        Task<bool> Delete(Guid id, bool commit = true);
     }
 }
