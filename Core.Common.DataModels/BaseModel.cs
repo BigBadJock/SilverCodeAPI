@@ -11,13 +11,13 @@ namespace Core.Common.DataModels
         /// </summary>
         /// <example>false</example>
         [Editable(false)]
-        public bool IsDeleted { get; set; }
+        public bool IsDeleted { get; set; } = false;
 
         /// <summary>
         /// Date & Time entity created
         /// </summary>
         [Editable(false)]
-        public DateTime Created { get; set; }
+        public DateTime Created { get; set; } = DateTime.Now;
 
         /// <summary>
         /// user name of creator 
@@ -29,7 +29,7 @@ namespace Core.Common.DataModels
         /// Date & Time entity last updated
         /// </summary>
         [Editable(false)]
-        public DateTime LastUpdated { get; set; }
+        public DateTime? LastUpdated { get; set; }
 
         /// <summary>
         /// user name of last updater
@@ -37,11 +37,5 @@ namespace Core.Common.DataModels
         [Editable(false)]
         public string LastUpdatedBy { get; set; }
 
-        public BaseModel()
-        {
-            IsDeleted = false;
-            Created = DateTime.Now;
-            LastUpdated = DateTime.Now;
-        }
     }
 }

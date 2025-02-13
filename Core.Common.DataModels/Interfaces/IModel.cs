@@ -7,7 +7,7 @@ namespace Core.Common.DataModels.Interfaces
         bool IsDeleted { get; set; }
         DateTime Created { get; set; }
         string CreatedBy { get; set; }
-        DateTime LastUpdated { get; set; }
-        string LastUpdatedBy { get; set; }
+        DateTime? LastUpdated { get; set; }
+        string? LastUpdatedBy { get; set; }
     }
 }
