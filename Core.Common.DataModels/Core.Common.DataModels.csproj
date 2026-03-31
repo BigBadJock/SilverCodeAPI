@@ -10,7 +10,7 @@
     <RepositoryUrl>https://github.com/BigBadJock/SilverCodeAPI</RepositoryUrl>
     <PackageTags>API, DataModels, Base Classes</PackageTags>
     <Copyright>2025</Copyright>
-    <Version>1.2026.331.214</Version>
+    <Version>1.2026.331.1211</Version>
     <PackageReleaseNotes>
       1.2.6 - removed some old code
       1.2.5 - upgradge to net9.0

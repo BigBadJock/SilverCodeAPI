@@ -13,7 +13,7 @@
     <Authors>John McArthur</Authors>
     <Company>John McArthur</Company>
     <Copyright>2025</Copyright>
-    <Version>1.2026.331.214</Version>
+    <Version>1.2026.331.1211</Version>
     <PackageReleaseNotes>
       1.2.6 - Removed some old code
       1.2.5 - Update to dotnet 9
