@@ -7,7 +7,7 @@ on:
     branches: [ master ]
     
 env:
-  NETCORE_VERSION: '9.0.x'
+  NETCORE_VERSION: '10.0.x'
   PRIVATE_NUGET_PATH: 'https://nuget.pkg.github.com/bigbadjock/index.json'
 
 jobs:
