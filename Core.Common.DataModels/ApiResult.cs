@@ -6,8 +6,6 @@ namespace Core.Common.DataModels
     {
         public IEnumerable<T> Data { get; set; }
 
-        #nullable enable
         public Pagination? Pagination { get; set; }
-        #nullable disable
     }
 }

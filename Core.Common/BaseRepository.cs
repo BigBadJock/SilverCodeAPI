@@ -4,7 +4,6 @@ using Core.Common.DataModels;
 using Core.Common.DataModels.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using REST_Parser;
 using System;
 using System.Collections.Generic;
@@ -31,8 +30,8 @@ namespace Core.Common
             try
             {
                 Guard.Against.Null(entity, nameof(entity));
-                entity.LastUpdated = DateTime.Now;
-                entity.Created = DateTime.Now;
+                entity.LastUpdated = DateTime.UtcNow;
+                entity.Created = DateTime.UtcNow;
                 var added = dbset.Add(entity);
                 if (commit)
                 {
@@ -55,12 +54,12 @@ namespace Core.Common
 
         public async Task AddBatch(IEnumerable<T> entities, int batchSize, IProgress<ProgressReport> progress)
         {
-            string message = $"Saving {entities.Count()} {typeof(T).Name}";
-
-            int total = entities.Count();
+            var entityList = entities.ToList();
+            int total = entityList.Count;
+            string message = $"Saving {total} {typeof(T).Name}";
             int count = 0;
             int batchCount = 0;
-            foreach (T entity in entities)
+            foreach (T entity in entityList)
             {
                 await this.Add(entity, false);
                 if (batchCount > batchSize)
@@ -91,13 +90,13 @@ namespace Core.Common
                 {
                     await dataContext.SaveChangesAsync().ConfigureAwait(false);
                 }
-                this.logger.LogInformation($"Repository: {this.GetType().Name} deleted then entity: {JsonConvert.SerializeObject(entity)}");
+                this.logger.LogInformation("Repository: {Name} deleted entity of type {Type}", this.GetType().Name, typeof(T).Name);
 
                 return true;
             }
             catch (DbUpdateException e)
             {
-                this.logger.LogError($"Repository: {this.GetType().Name} failed throwing exception: {e} when trying to delete an entity : {JsonConvert.SerializeObject(entity)}", e);
+                this.logger.LogError(e, "Repository: {Name} failed when trying to delete entity of type {Type}", this.GetType().Name, typeof(T).Name);
                 return false;
             }
 
@@ -111,7 +110,7 @@ namespace Core.Common
                 foreach (T obj in objects)
                 {
                     dbset.Remove(obj);
-                    this.logger.LogInformation($"Repository: {this.GetType().Name} deleting entity: {JsonConvert.SerializeObject(obj)}");
+                    this.logger.LogInformation("Repository: {Name} removing entity of type {Type}", this.GetType().Name, typeof(T).Name);
                 }
                 if (commit)
                 {
@@ -138,12 +137,12 @@ namespace Core.Common
                 {
                     await dataContext.SaveChangesAsync().ConfigureAwait(false);
                 }
-                this.logger.LogInformation($"Repository: {this.GetType().Name} updating entity: {JsonConvert.SerializeObject(entity)}");
+                this.logger.LogInformation("Repository: {Name} updated entity of type {Type}", this.GetType().Name, typeof(T).Name);
                 return entity;
             }
             catch (DbUpdateException e)
             {
-                this.logger.LogError($"Repository: {this.GetType().Name} failed throwing exception: {e} when trying to update entity: {JsonConvert.SerializeObject(entity)}", e);
+                this.logger.LogError(e, "Repository: {Name} failed when trying to update entity of type {Type}", this.GetType().Name, typeof(T).Name);
                 throw;
             }
         }

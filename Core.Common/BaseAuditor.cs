@@ -1,17 +1,27 @@
 ﻿using Core.Common.Contracts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using Microsoft.Extensions.Logging;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Core.Common
 {
+    /// <summary>
+    /// Default audit implementation that writes to the application logger.
+    /// Override AuditAsync in a derived class to persist to a dedicated audit store.
+    /// </summary>
     public abstract class BaseAuditor : IAuditor
     {
-        public void Audit(string audit)
+        private readonly ILogger<BaseAuditor> logger;
+
+        protected BaseAuditor(ILogger<BaseAuditor> logger)
         {
-            throw new NotImplementedException();
+            this.logger = logger;
+        }
+
+        public virtual Task AuditAsync(string message, CancellationToken cancellationToken = default)
+        {
+            logger.LogInformation("AUDIT: {Message}", message);
+            return Task.CompletedTask;
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Core.Common.DataModels
         /// Date & Time entity created
         /// </summary>
         [Editable(false)]
-        public DateTime Created { get; set; } = DateTime.Now;
+        public DateTime Created { get; set; } = DateTime.UtcNow;
 
         /// <summary>
         /// user name of creator 

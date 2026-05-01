@@ -33,7 +33,7 @@ namespace Core.Common
             }
             catch (Exception ex)
             {
-                this.logger.LogError($"DataService: {this.GetType().Name} error adding new entity: ${ex.Message}");
+                this.logger.LogError(ex, "DataService: {Name} error adding new entity", this.GetType().Name);
                 throw;
             }
             finally
@@ -47,12 +47,12 @@ namespace Core.Common
         {
             try
             {
-                this.logger.LogInformation($"DataService: {this.GetType().Name} deleting on condition: ${where}");
+                this.logger.LogInformation("DataService: {Name} deleting on condition", this.GetType().Name);
                 return await this.repository.Delete(where);
             }
             catch (Exception ex)
             {
-                this.logger.LogError($"DataService: {this.GetType().Name} error deleting on condition: ${ex.Message}");
+                this.logger.LogError(ex, "DataService: {Name} error deleting on condition", this.GetType().Name);
                 throw;
             }
             finally
@@ -65,17 +65,17 @@ namespace Core.Common
         {
             try
             {
-                this.logger.LogInformation($"DataService: {this.GetType().Name} searching using restQuery ${restQuery}");
+                this.logger.LogInformation("DataService: {Name} searching using restQuery {Query}", this.GetType().Name, restQuery);
                 return this.repository.GetAll(restQuery);
             }
             catch (Exception ex)
             {
-                this.logger.LogError($"DataService: {this.GetType().Name} error searching using restQuery: ${ex.Message}");
+                this.logger.LogError(ex, "DataService: {Name} error searching using restQuery", this.GetType().Name);
                 throw;
             }
             finally
             {
-                this.logger.LogInformation($"DataService: {this.GetType().Name} exiting searching using restQuery ${restQuery}");
+                this.logger.LogInformation("DataService: {Name} exiting searching using restQuery", this.GetType().Name);
             }
         }
 
@@ -88,7 +88,7 @@ namespace Core.Common
             }
             catch (Exception ex)
             {
-                this.logger.LogError($"DataService: {this.GetType().Name} error updating entity: ${ex.Message}");
+                this.logger.LogError(ex, "DataService: {Name} error updating entity", this.GetType().Name);
                 throw;
             }
             finally

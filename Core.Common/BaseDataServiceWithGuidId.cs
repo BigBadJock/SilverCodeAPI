@@ -29,7 +29,7 @@ namespace Core.Common
             }
             catch (Exception ex)
             {
-                this.logger.LogError($"DataService: {this.GetType().Name} error getting entity by id: ${ex.Message}");
+                this.logger.LogError(ex, "DataService: {Name} error getting entity by id", this.GetType().Name);
                 throw;
             }
             finally
@@ -47,7 +47,7 @@ namespace Core.Common
             }
             catch (Exception ex)
             {
-                this.logger.LogError($"DataService: {this.GetType().Name} error deleting entity: ${ex.Message}");
+                this.logger.LogError(ex, "DataService: {Name} error deleting entity", this.GetType().Name);
                 throw;
             }
             finally

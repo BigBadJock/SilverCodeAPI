@@ -3,7 +3,6 @@ using Core.Common.Contracts;
 using Core.Common.DataModels.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using REST_Parser;
 using System.Threading.Tasks;
 
@@ -38,14 +37,19 @@ namespace Core.Common
             {
                 Guard.Against.Null(id, nameof(id));
 
-                T entity = dbset.FindAsync(id).Result;
+                T entity = await dbset.FindAsync(id);
+                if (entity == null)
+                {
+                    this.logger.LogWarning("Repository: {Name} entity of type {Type} not found for id {Id}", this.GetType().Name, typeof(T).Name, id);
+                    return false;
+                }
 
                 dbset.Remove(entity);
                 if (commit)
                 {
                     await dataContext.SaveChangesAsync().ConfigureAwait(false);
                 }
-                this.logger.LogInformation($"Repository: {this.GetType().Name} deleted then entity: {JsonConvert.SerializeObject(entity)}");
+                this.logger.LogInformation("Repository: {Name} deleted entity of type {Type} with id {Id}", this.GetType().Name, typeof(T).Name, id);
 
                 return true;
             }
