@@ -16,7 +16,7 @@ namespace Core.Common
         protected IRepository<DBC, T> repository;
         protected ILogger<IDataService<DBC, T>> logger;
 
-        public BaseDataService(IRepository<DBC, T> repository, ILogger<IDataService<DBC, T>> logger)
+        protected BaseDataService(IRepository<DBC, T> repository, ILogger<IDataService<DBC, T>> logger)
         {
             this.repository = repository;
             this.logger = logger;

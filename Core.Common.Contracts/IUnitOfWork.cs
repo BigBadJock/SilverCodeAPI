@@ -1,8 +1,10 @@
-﻿namespace Core.Common.Contracts
+﻿using System.Threading;
+using System.Threading.Tasks;
+
+namespace Core.Common.Contracts
 {
     public interface IUnitOfWork
     {
-        void Commit();
-
+        Task CommitAsync(CancellationToken cancellationToken = default);
     }
 }

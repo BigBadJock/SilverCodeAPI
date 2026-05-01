@@ -1,10 +1,12 @@
 ﻿using Core.Common.DataModels.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace Core.Common.DataModels
 {
-    public class BaseModelWithStringId : BaseModel, IModelWithStringId
+    public abstract class BaseModelWithStringId : BaseModel, IModelWithStringId
     {
-        public string Id { get; set; }
+        [Required]
+        public string Id { get; set; } = string.Empty;
 
         public BaseModelWithStringId() : base()
         {

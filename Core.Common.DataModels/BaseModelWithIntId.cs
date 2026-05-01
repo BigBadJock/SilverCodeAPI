@@ -2,7 +2,7 @@
 
 namespace Core.Common.DataModels
 {
-    public class BaseModelWithIntId : BaseModel, IModelWithIntId
+    public abstract class BaseModelWithIntId : BaseModel, IModelWithIntId
     {
         public int Id { get; set; }
 

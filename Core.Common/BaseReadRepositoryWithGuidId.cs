@@ -19,15 +19,15 @@ namespace Core.Common
 
         public virtual async Task<T> GetById(Guid id)
         {
-            this.logger.LogInformation($"Repository: {this.GetType().Name} getting entity for id {id}");
+            this.logger.LogInformation("Repository: {Name} getting entity for id {Id}", this.GetType().Name, id);
             T result = await this.dbset.FindAsync(id);
             if (result == null)
             {
-                this.logger.LogInformation($"Repository: {this.GetType().Name} entity not found for id {id}");
+                this.logger.LogInformation("Repository: {Name} entity not found for id {Id}", this.GetType().Name, id);
             }
             else
             {
-                this.logger.LogInformation($"Repository: {this.GetType().Name} entity found for id {id}");
+                this.logger.LogInformation("Repository: {Name} entity found for id {Id}", this.GetType().Name, id);
             }
             return result;
         }

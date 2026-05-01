@@ -1,10 +1,10 @@
 ﻿namespace Core.Common.DataModels
 {
-    public class Pagination
+    public record Pagination
     {
-        public int PageNumber { get; set; }
-        public int PageSize { get; set; }
-        public int PageCount { get; set; }
-        public int TotalCount { get; set; }
+        public int PageNumber { get; init; }
+        public int PageSize { get; init; }
+        public int PageCount { get; init; }
+        public int TotalCount { get; init; }
     }
 }

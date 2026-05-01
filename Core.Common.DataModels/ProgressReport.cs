@@ -1,9 +1,9 @@
 ﻿namespace Core.Common.DataModels
 {
-    public class ProgressReport
+    public record ProgressReport
     {
-        public int CurrentProgress { get; set; }
-        public int TotalProgress { get; set; }
-        public string Message { get; set; } = "Processing";
+        public int CurrentProgress { get; init; }
+        public int TotalProgress { get; init; }
+        public string Message { get; init; } = "Processing";
     }
 }

@@ -5,12 +5,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Core.Common.DataModels
 {
-    public class BaseModelWithGuidId : BaseModel, IModelWithGuidId
+    public abstract class BaseModelWithGuidId : BaseModel, IModelWithGuidId
     {
         /// <summary>
         /// Unique Id
         /// </summary>
-        /// <example>1</example>
+        /// <example>3fa85f64-5717-4562-b3fc-2c963f66afa6</example>
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public Guid Id { get; set; }

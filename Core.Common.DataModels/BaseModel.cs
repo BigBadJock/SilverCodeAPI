@@ -23,7 +23,7 @@ namespace Core.Common.DataModels
         /// user name of creator 
         /// </summary>
         [Editable(false)]
-        public string CreatedBy { get; set; }
+        public string? CreatedBy { get; set; }
 
         /// <summary>
         /// Date & Time entity last updated

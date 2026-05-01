@@ -90,14 +90,13 @@ namespace Core.Common
 
             RestResult<T> restResult = this.restParser.Run(dbResult, restQuery);
 
-            ApiResult<T> apiResult = new ApiResult<T>();
-            apiResult.Data = restResult.Data.ToList();
-            if (restResult.PageSize > 0)
+            return new ApiResult<T>
             {
-                apiResult.Pagination = new Pagination { PageSize = restResult.PageSize, PageNumber = restResult.Page, PageCount = restResult.PageCount, TotalCount = restResult.TotalCount };
-            }
-
-            return apiResult;
+                Data = restResult.Data.ToList(),
+                Pagination = restResult.PageSize > 0
+                    ? new Pagination { PageSize = restResult.PageSize, PageNumber = restResult.Page, PageCount = restResult.PageCount, TotalCount = restResult.TotalCount }
+                    : null
+            };
         }
 
         private IQueryable<T> GetAllData(bool includeForCall = false)

@@ -3,14 +3,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Core.Common.DataModels
 {
-    public class RefreshTokenCredentials
+    public record RefreshTokenCredentials
     {
         [Required]
         [DisplayName("UserName")]
-        public string UserName { get; set; }
+        public string UserName { get; init; } = string.Empty;
 
         [Required]
         [DisplayName("RefreshToken")]
-        public string RefreshToken { get; set; }
+        public string RefreshToken { get; init; } = string.Empty;
     }
 }

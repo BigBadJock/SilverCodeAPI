@@ -3,18 +3,17 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Core.Common.DataModels
 {
-    public class Credentials
+    public record Credentials
     {
-
         [Required]
         [EmailAddress]
         [DisplayName("Email")]
-        public string Email { get; set; }
+        public string Email { get; init; } = string.Empty;
 
         [Required]
-        [StringLength(256, ErrorMessage ="The {0} must be at least {2} characters long.", MinimumLength =12)]
+        [StringLength(256, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 12)]
         [DataType(DataType.Password)]
         [DisplayName("Password")]
-        public string Password { get; set; }
+        public string Password { get; init; } = string.Empty;
     }
 }

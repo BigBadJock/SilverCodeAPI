@@ -2,10 +2,9 @@
 
 namespace Core.Common.DataModels
 {
-    public class ApiResult<T>
+    public record ApiResult<T>
     {
-        public IEnumerable<T> Data { get; set; }
-
-        public Pagination? Pagination { get; set; }
+        public IEnumerable<T> Data { get; init; } = [];
+        public Pagination? Pagination { get; init; }
     }
 }
