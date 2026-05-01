@@ -21,10 +21,9 @@ jobs:
     - name: Setup .NET Core  ${{ env.NETCORE_VERSION }}
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version:  ${{ env.NETCORE_VERSION }}
+        dotnet-version: ${{ env.NETCORE_VERSION }}
         source-url: ${{ env.PRIVATE_NUGET_PATH }}
-      env:
-         NUGET_AUTH_TOKEN: ${{secrets.NUGET_TOKEN}}
+        token: ${{ secrets.NUGET_TOKEN }}
 
     - name: Restore
       run: dotnet restore ./SilverCodeAPI.sln
