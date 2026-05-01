@@ -25,6 +25,11 @@ jobs:
         source-url: ${{ env.PRIVATE_NUGET_PATH }}
         token: ${{ secrets.NUGET_TOKEN }}
 
+    - name: Patch nuget.config with secrets
+      run: |
+        sed -i 's|%GITHUB_PACKAGES_USER%|bigbadjock|g' nuget.config
+        sed -i 's|%GITHUB_PACKAGES_PAT%|${{ secrets.NUGET_TOKEN }}|g' nuget.config
+        
     - name: Restore
       run: dotnet restore ./SilverCodeAPI.sln
       
