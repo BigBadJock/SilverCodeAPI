@@ -22,13 +22,26 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ env.NETCORE_VERSION }}
-        source-url: ${{ env.PRIVATE_NUGET_PATH }}
-        token: ${{ secrets.NUGET_TOKEN }}
 
-    - name: Patch nuget.config with secrets
+    - name: Create NuGet config for GitHub Packages
       run: |
-        sed -i 's|%GITHUB_PACKAGES_USER%|bigbadjock|g' nuget.config
-        sed -i 's|%GITHUB_PACKAGES_PAT%|${{ secrets.NUGET_TOKEN }}|g' nuget.config
+        cat <<EOF > ./nuget.config
+        <?xml version="1.0" encoding="utf-8"?>
+        <configuration>
+          <packageSources>
+            <clear />
+            <add key="nuget.org" value="https://api.nuget.org/v3/index.json" protocolVersion="3" />
+            <add key="bigbadjock-github" value="https://nuget.pkg.github.com/bigbadjock/index.json" />
+          </packageSources>
+          <packageSourceCredentials>
+            <bigbadjock-github>
+              <add key="Username" value="bigbadjock" />
+              <add key="ClearTextPassword" value="${{ secrets.NUGET_TOKEN }}" />
+            </bigbadjock-github>
+          </packageSourceCredentials>
+        </configuration>
+        EOF
+
         
     - name: Restore
       run: dotnet restore ./SilverCodeAPI.sln
