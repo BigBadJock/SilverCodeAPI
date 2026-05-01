@@ -24,7 +24,7 @@ jobs:
         dotnet-version:  ${{ env.NETCORE_VERSION }}
         source-url: ${{ env.PRIVATE_NUGET_PATH }}
       env:
-         NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+         NUGET_AUTH_TOKEN: ${{secrets.NUGET_TOKEN}}
 
     - name: Restore
       run: dotnet restore ./SilverCodeAPI.sln
