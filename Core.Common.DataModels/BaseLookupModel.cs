@@ -6,7 +6,7 @@ namespace Core.Common.DataModels
     public abstract class BaseLookupModel : BaseModelWithIntId, ILookupModel
     {
         [Required]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         public BaseLookupModel() : base()
         {

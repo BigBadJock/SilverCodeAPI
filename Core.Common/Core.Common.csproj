@@ -14,7 +14,7 @@
     <Authors>John McArthur</Authors>
     <Company>John McArthur</Company>
     <Copyright>2025</Copyright>
-    <Version>1.2026.501.1935</Version>
+    <Version>1.2026.501.2039</Version>
     <PackageReleaseNotes>
       1.2.6 - Removed some old code
       1.2.5 - Update to dotnet 9

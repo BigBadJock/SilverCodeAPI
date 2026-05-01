@@ -35,7 +35,7 @@ namespace Core.Common.DataModels
         /// user name of last updater
         /// </summary>
         [Editable(false)]
-        public string LastUpdatedBy { get; set; }
+        public string? LastUpdatedBy { get; set; }
 
     }
 }
