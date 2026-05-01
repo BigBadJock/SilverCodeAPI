@@ -19,7 +19,7 @@ namespace Core.Common
             rep = (IRepositoryWithStringId<DBC, T>)this.repository;
         }
 
-        public virtual async Task<T> GetById(string id)
+        public virtual async Task<T?> GetById(string id)
         {
             try
             {

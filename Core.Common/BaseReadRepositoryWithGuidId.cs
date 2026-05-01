@@ -17,10 +17,10 @@ namespace Core.Common
 
         }
 
-        public virtual async Task<T> GetById(Guid id)
+        public virtual async Task<T?> GetById(Guid id)
         {
             this.logger.LogInformation("Repository: {Name} getting entity for id {Id}", this.GetType().Name, id);
-            T result = await this.dbset.FindAsync(id);
+            T? result = await this.dbset.FindAsync(id);
             if (result == null)
             {
                 this.logger.LogInformation("Repository: {Name} entity not found for id {Id}", this.GetType().Name, id);

@@ -9,6 +9,6 @@ namespace Core.Common.Contracts
         where T : class, IModel, IModelWithGuidId, new()
         where DBC : DbContext
     {
-        Task<T> GetById(Guid id);
+        Task<T?> GetById(Guid id);
     }
 }

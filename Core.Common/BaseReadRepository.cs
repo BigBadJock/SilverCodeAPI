@@ -21,7 +21,7 @@ namespace Core.Common
         protected readonly ILogger<IReadRepository<DBC, T>> logger;
         protected readonly IRestToLinqParser<T> restParser;
         protected readonly DbSet<T> dbset;
-        protected List<string> includes;
+        protected List<string> includes = [];
 
         /// <summary>
         /// Constructor

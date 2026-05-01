@@ -20,7 +20,7 @@ namespace Core.Common
 
         }
 
-        public virtual async Task<T> GetById(int id)
+        public virtual async Task<T?> GetById(int id)
         {
             try
             {

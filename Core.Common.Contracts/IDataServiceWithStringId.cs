@@ -8,7 +8,7 @@ namespace Core.Common.Contracts
         where T : class, IModel, IModelWithStringId, new()
         where DBC : DbContext
     {
-        Task<T> GetById(string id);
+        Task<T?> GetById(string id);
         Task<bool> Delete(string id, bool commit = true);
     }
 }
