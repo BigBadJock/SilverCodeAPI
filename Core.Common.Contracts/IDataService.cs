@@ -2,6 +2,7 @@
 using Core.Common.DataModels.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
@@ -14,6 +15,9 @@ namespace Core.Common.Contracts
         Task<T> Add(T model);
         Task<T> Update(T model);
         Task<bool> Delete(Expression<Func<T, bool>> where);
+
+        IQueryable<T> GetAll();
+
         ApiResult<T> Search(string restQuery);
 
     }

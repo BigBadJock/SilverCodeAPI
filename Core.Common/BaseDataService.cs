@@ -4,6 +4,7 @@ using Core.Common.DataModels.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
@@ -20,7 +21,7 @@ namespace Core.Common
         {
             this.repository = repository;
             this.logger = logger;
-            this.logger.LogInformation($"Creating DataService {this.GetType().Name}");
+            this.logger.LogInformation($"Creating DataService {GetType().Name}");
 
         }
 
@@ -28,17 +29,17 @@ namespace Core.Common
         {
             try
             {
-                this.logger.LogInformation($"DataService: {this.GetType().Name} adding new entity");
-                return await this.repository.Add(model);
+                logger.LogInformation($"DataService: {GetType().Name} adding new entity");
+                return await repository.Add(model);
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, "DataService: {Name} error adding new entity", this.GetType().Name);
+                logger.LogError(ex, "DataService: {Name} error adding new entity", GetType().Name);
                 throw;
             }
             finally
             {
-                this.logger.LogInformation($"DataService: {this.GetType().Name} exiting add new entity");
+                logger.LogInformation($"DataService: {GetType().Name} exiting add new entity");
             }
 
         }
@@ -47,17 +48,31 @@ namespace Core.Common
         {
             try
             {
-                this.logger.LogInformation("DataService: {Name} deleting on condition", this.GetType().Name);
-                return await this.repository.Delete(where);
+                logger.LogInformation("DataService: {Name} deleting on condition", GetType().Name);
+                return await repository.Delete(where);
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, "DataService: {Name} error deleting on condition", this.GetType().Name);
+                logger.LogError(ex, "DataService: {Name} error deleting on condition", GetType().Name);
                 throw;
             }
             finally
             {
-                this.logger.LogInformation($"DataService: {this.GetType().Name} exiting deleting on condition");
+                logger.LogInformation($"DataService: {GetType().Name} exiting deleting on condition");
+            }
+        }
+
+        public IQueryable<T> GetAll()
+        {
+            try
+            {
+                logger.LogInformation($"DataService: {GetType().Name} retrieving all entities");
+                return repository.GetAll();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "DataService: {Name} GetAll()", GetType().Name);
+                throw;
             }
         }
 
@@ -65,17 +80,17 @@ namespace Core.Common
         {
             try
             {
-                this.logger.LogInformation("DataService: {Name} searching using restQuery {Query}", this.GetType().Name, restQuery);
-                return this.repository.GetAll(restQuery);
+                logger.LogInformation("DataService: {Name} searching using restQuery {Query}", GetType().Name, restQuery);
+                return repository.GetAll(restQuery);
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, "DataService: {Name} error searching using restQuery", this.GetType().Name);
+                logger.LogError(ex, "DataService: {Name} error searching using restQuery", GetType().Name);
                 throw;
             }
             finally
             {
-                this.logger.LogInformation("DataService: {Name} exiting searching using restQuery", this.GetType().Name);
+                logger.LogInformation("DataService: {Name} exiting searching using restQuery", GetType().Name);
             }
         }
 
@@ -83,17 +98,17 @@ namespace Core.Common
         {
             try
             {
-                this.logger.LogInformation($"DataService: {this.GetType().Name} updating entity");
-                return await this.repository.Update(model);
+                logger.LogInformation($"DataService: {GetType().Name} updating entity");
+                return await repository.Update(model);
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, "DataService: {Name} error updating entity", this.GetType().Name);
+                logger.LogError(ex, "DataService: {Name} error updating entity", GetType().Name);
                 throw;
             }
             finally
             {
-                this.logger.LogInformation($"DataService: {this.GetType().Name} exiting updating entity");
+                logger.LogInformation($"DataService: {GetType().Name} exiting updating entity");
             }
         }
     }
