@@ -21,7 +21,7 @@ namespace Core.Common
         {
             this.repository = repository;
             this.logger = logger;
-            this.logger.LogInformation($"Creating DataService {GetType().Name}");
+            this.logger.LogInformation("Creating DataService {Name}", GetType().Name);
 
         }
 
@@ -29,7 +29,7 @@ namespace Core.Common
         {
             try
             {
-                logger.LogInformation($"DataService: {GetType().Name} adding new entity");
+                logger.LogInformation("DataService: {Name} adding new entity", GetType().Name);
                 return await repository.Add(model);
             }
             catch (Exception ex)
@@ -39,7 +39,7 @@ namespace Core.Common
             }
             finally
             {
-                logger.LogInformation($"DataService: {GetType().Name} exiting add new entity");
+                logger.LogInformation("DataService: {Name} exiting add new entity", GetType().Name);
             }
 
         }
@@ -58,15 +58,15 @@ namespace Core.Common
             }
             finally
             {
-                logger.LogInformation($"DataService: {GetType().Name} exiting deleting on condition");
+                logger.LogInformation("DataService: {Name} exiting deleting on condition", GetType().Name);
             }
         }
 
-        public IQueryable<T> GetAll()
+        public virtual IQueryable<T> GetAll()
         {
             try
             {
-                logger.LogInformation($"DataService: {GetType().Name} retrieving all entities");
+                logger.LogInformation("DataService: {Name} retrieving all entities", GetType().Name);
                 return repository.GetAll();
             }
             catch (Exception ex)
@@ -98,7 +98,7 @@ namespace Core.Common
         {
             try
             {
-                logger.LogInformation($"DataService: {GetType().Name} updating entity");
+                logger.LogInformation("DataService: {Name} updating entity", GetType().Name);
                 return await repository.Update(model);
             }
             catch (Exception ex)
@@ -108,7 +108,7 @@ namespace Core.Common
             }
             finally
             {
-                logger.LogInformation($"DataService: {GetType().Name} exiting updating entity");
+                logger.LogInformation("DataService: {Name} exiting updating entity", GetType().Name);
             }
         }
     }

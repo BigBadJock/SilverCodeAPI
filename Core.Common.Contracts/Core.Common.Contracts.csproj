@@ -21,6 +21,7 @@
     <PackageTags>API, Interfaces</PackageTags>
     <Version>1.2026.506.2224</Version>
     <PackageReleaseNotes>
+      2.0.0 - Update REST-Parser to 2.0.0. IRepository.AddBatch progress is optional. Add GetAll() to IDataService
       1.2.6 - Removed some old code
       1.2.5 - Update to dotnet 9
       1.2.2 = Update Rest-Parser version

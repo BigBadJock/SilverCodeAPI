@@ -320,7 +320,7 @@ Task<T?>       GetById(TId id);                  // DbSet.FindAsync — null if 
 Task<T>        Add(T entity, bool commit = true);
 Task<T>        Update(T entity, bool commit = true);
 Task<bool>     Delete(Expression<Func<T, bool>> where, bool commit = true);
-Task           AddBatch(IEnumerable<T> entities, int batchSize, IProgress<ProgressReport> progress);
+Task           AddBatch(IEnumerable<T> entities, int batchSize, IProgress<ProgressReport>? progress);
 Task           Commit();                         // SaveChangesAsync on this repository's context
 
 // IRepositoryWithXxxId<DBC,T>
@@ -334,11 +334,12 @@ Task<bool>     Delete(TId id, bool commit = true);
 | Method | Behaviour |
 |--------|-----------|
 | `Add` | Sets `Created` and `LastUpdated` to `DateTime.UtcNow`. Throws on `null` or `DbUpdateException`. |
-| `Update` | Attaches the entity and marks **all** properties modified. Does not touch any audit fields. |
+| `Update` | Attaches the entity and marks all properties modified **except** `Created` and `CreatedBy`. Sets `LastUpdated` to `DateTime.UtcNow`. |
 | `Delete(id)` | Hard delete. Returns `false` if the entity is not found **or** a `DbUpdateException` occurs. |
 | `Delete(entity)` | Hard delete. Returns `false` on `DbUpdateException`. |
-| `Delete(where)` | Hard delete of all matches. Returns `true` even if nothing matched; rethrows `DbUpdateException`. |
-| `AddBatch` | Adds with `commit: false`, calls `Commit()` roughly every `batchSize` entities and once at the end, reporting progress after each entity. `progress` must not be `null`. |
+| `Delete(where)` | Hard delete of all matches. Returns `false` if nothing matched; rethrows `DbUpdateException`. |
+| `AddBatch` | Adds with `commit: false` and calls `Commit()` after every `batchSize` entities, plus once at the end for any remainder. Reports progress after each entity if `progress` is not `null`. |
+| `GetAll` | With `AlwaysIncludeChildren = true`, includes every navigation property EF Core knows about for `T` (collections and references). |
 | `GetById` | Uses `FindAsync`; never applies `Include`s. |
 
 ### Examples
@@ -388,7 +389,7 @@ public class ProductRepository : BaseRepositoryWithIntId<AppDbContext, Product>,
 
 ## Data Services
 
-Data services wrap a repository and add entry/exit/error logging. All methods except `GetAll()` are `virtual`.
+Data services wrap a repository and add entry/exit/error logging. All methods are `virtual`.
 
 ```csharp
 // IDataService<DBC,T>
@@ -496,7 +497,7 @@ If you need atomic multi-entity writes, put them in a single repository (using `
 | `IsDeleted` | `bool` | `false` | Soft-delete flag (not enforced by the base classes) |
 | `Created` | `DateTime` | `DateTime.UtcNow` | Creation timestamp (re-set by `Add`) |
 | `CreatedBy` | `string?` | `null` | Creator — populate yourself |
-| `LastUpdated` | `DateTime?` | `null` | Set by `Add`; not set by `Update` |
+| `LastUpdated` | `DateTime?` | `null` | Set by `Add` and `Update` |
 | `LastUpdatedBy` | `string?` | `null` | Last updater — populate yourself |
 
 All of these are marked `[Editable(false)]`.
@@ -733,7 +734,7 @@ See [Docs/Rest-Parser-Usage.md](Docs/Rest-Parser-Usage.md) for the full syntax.
 
 ### Audit fields
 
-The base repository sets `Created` and `LastUpdated` on `Add` only. `Update` leaves all audit fields as supplied by the caller, and because it marks every property modified, a client-supplied `Created`/`CreatedBy` will overwrite the stored values. Populate the user fields (and protect the creation fields) by overriding `Add`/`Update`:
+The base repository sets `Created` and `LastUpdated` on `Add`, and `LastUpdated` on `Update`. `Update` never writes `Created` or `CreatedBy`, so values sent by a client can't overwrite them. `CreatedBy` and `LastUpdatedBy` are not populated by the base classes — set them by overriding `Add`/`Update`:
 
 ```csharp
 public class ProductRepository : BaseRepositoryWithIntId<AppDbContext, Product>, IProductRepository
@@ -760,18 +761,10 @@ public class ProductRepository : BaseRepositoryWithIntId<AppDbContext, Product>,
         return base.Add(entity, commit);
     }
 
-    public override async Task<Product> Update(Product entity, bool commit = true)
+    public override Task<Product> Update(Product entity, bool commit = true)
     {
-        entity.LastUpdated = DateTime.UtcNow;
         entity.LastUpdatedBy = CurrentUser;
-
-        await base.Update(entity, commit: false);
-        var entry = DataContext.Entry(entity);
-        entry.Property(e => e.Created).IsModified = false;
-        entry.Property(e => e.CreatedBy).IsModified = false;
-
-        if (commit) await Commit();
-        return entity;
+        return base.Update(entity, commit);
     }
 }
 ```
@@ -826,10 +819,9 @@ modelBuilder.Entity<Product>().HasQueryFilter(p => !p.IsDeleted);
 
 ## Known Limitations
 
-- **`AlwaysIncludeChildren`**: include paths are discovered by reflection as every property whose type is generic. This also picks up `Nullable<T>` properties — including `BaseModel.LastUpdated` — so enabling it causes EF Core to throw when the query runs. It also misses non-collection reference navigations, and it never applies to `GetById`. Prefer overriding `GetAll()` with explicit `.Include(...)` calls.
-- **One `DbContext` per repository** — see [Unit of Work](#unit-of-work). The context is not disposed by the repository.
-- **`AddBatch` batch sizes** are approximate: the first commit happens after `batchSize + 2` entities and subsequent ones every `batchSize + 1`.
-- **`Delete(where)` always returns `true`**, so it cannot be used to detect "not found".
+- **One `DbContext` per repository** — see [Unit of Work](#unit-of-work). Repositories implement `IDisposable`/`IAsyncDisposable` and dispose their context, so register them as scoped (or transient) and let the DI container dispose them.
+- **`AlwaysIncludeChildren` doesn't apply to `GetById`**, which uses `FindAsync`. It also includes only one level of navigations; override `GetAll()` with explicit `.Include(...).ThenInclude(...)` for deeper graphs.
+- **Delete error handling differs by overload**: `Delete(id)` and `Delete(entity)` return `false` on `DbUpdateException`, while `Delete(where)` rethrows it.
 
 ---
 
@@ -841,9 +833,9 @@ modelBuilder.Entity<Product>().HasQueryFilter(p => !p.IsDeleted);
 | `Unable to resolve service for type IRestToLinqParser<T>` | Parser not registered | `builder.Services.RegisterRestParser<T>()` |
 | `Unable to resolve service for type IRepositoryWithIntId<...>` | Service constructor asks for the generic interface but only `IProductRepository` is registered | Take `IProductRepository` in the service constructor, or register the generic interface too |
 | Changes made with `commit: false` never saved | `SaveChanges` called on a different context | Call `Commit()` on the same repository |
-| Navigation properties are null | Includes not applied | Override `GetAll()` with explicit `Include`s (see Known Limitations) |
+| Navigation properties are null | Includes not applied | Set `AlwaysIncludeChildren = true`, or override `GetAll()` with explicit `Include`s |
 | `CreatedBy` / `LastUpdatedBy` always null | Not populated by the base classes | Override `Add` / `Update` (see [Auditing](#auditing)) |
-| `LastUpdated` not changing on update | `Update` doesn't set it | Override `Update` |
+| `ObjectDisposedException` from a repository | Repository used after its DI scope ended | Don't hold repositories in singletons or beyond the request |
 | `Pagination` is null | No `$page` / `$pagesize` in the query | Include `$page=1&$pagesize=20` |
 | `ArgumentException` on query | Query too long, too many conditions, or a part with no `=` | Max 2000 chars, max 50 conditions |
 | `REST_InvalidFieldnameException` for `price[DESC]` | Wrong sort syntax | Use `$sort_by[desc]=price` |

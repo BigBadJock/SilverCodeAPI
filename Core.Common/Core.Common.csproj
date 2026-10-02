@@ -16,6 +16,7 @@
     <Copyright>2025</Copyright>
     <Version>1.2026.506.2224</Version>
     <PackageReleaseNotes>
+      2.0.0 - Update REST-Parser to 2.0.0. AlwaysIncludeChildren uses EF Core navigations. Update sets LastUpdated and preserves Created/CreatedBy. Fix AddBatch batch sizes, progress optional. Delete(where) returns false when nothing matched. Repositories dispose their DbContext. Remove unused Newtonsoft.Json and System.IdentityModel.Tokens.Jwt references
       1.2.6 - Removed some old code
       1.2.5 - Update to dotnet 9
       1.2.4 - Update Rest Parser version
@@ -74,9 +75,7 @@
   <ItemGroup>
     <PackageReference Include="Ardalis.GuardClauses" Version="5.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.7" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="REST-Parser" Version="2.0.0" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.18.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -11,12 +11,11 @@ namespace Core.Common
         where T : class, IModel, IModelWithGuidId, new()
         where DBC : DbContext
     {
-        private IRepositoryWithGuidId<DBC, T> rep;
+        private readonly IRepositoryWithGuidId<DBC, T> rep;
 
         public BaseDataServiceWithGuidId(IRepositoryWithGuidId<DBC, T> repository, ILogger<IDataServiceWithGuidId<DBC, T>> logger) : base(repository, logger)
         {
-            this.logger.LogInformation($"Creating DataService {this.GetType().Name}");
-            rep = (IRepositoryWithGuidId<DBC, T>)this.repository;
+            rep = repository;
 
         }
 
@@ -24,7 +23,7 @@ namespace Core.Common
         {
             try
             {
-                this.logger.LogInformation($"DataService: {this.GetType().Name} getting entity by id");
+                this.logger.LogInformation("DataService: {Name} getting entity by id", this.GetType().Name);
                 return await rep.GetById(id);
             }
             catch (Exception ex)
@@ -34,7 +33,7 @@ namespace Core.Common
             }
             finally
             {
-                this.logger.LogInformation($"DataService: {this.GetType().Name} exiting get entity by id");
+                this.logger.LogInformation("DataService: {Name} exiting get entity by id", this.GetType().Name);
             }
         }
 
@@ -42,7 +41,7 @@ namespace Core.Common
         {
             try
             {
-                this.logger.LogInformation($"DataService: {this.GetType().Name} deleting entity");
+                this.logger.LogInformation("DataService: {Name} deleting entity", this.GetType().Name);
                 return await rep.Delete(id, commit);
             }
             catch (Exception ex)
@@ -52,7 +51,7 @@ namespace Core.Common
             }
             finally
             {
-                this.logger.LogInformation($"DataService: {this.GetType().Name} exiting delete entity");
+                this.logger.LogInformation("DataService: {Name} exiting delete entity", this.GetType().Name);
             }
         }
 

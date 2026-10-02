@@ -1,4 +1,4 @@
-﻿using Core.Common.Contracts;
+using Core.Common.Contracts;
 using Core.Common.DataModels;
 using Core.Common.DataModels.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -8,11 +8,11 @@ using REST_Parser.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Core.Common
 {
-    public abstract class BaseReadRepository<DBC, T> : IReadRepository<DBC, T>
+    public abstract class BaseReadRepository<DBC, T> : IReadRepository<DBC, T>, IDisposable, IAsyncDisposable
         where T : class, IModel, new()
         where DBC : DbContext
     {
@@ -22,50 +22,42 @@ namespace Core.Common
         protected readonly IRestToLinqParser<T> restParser;
         protected readonly DbSet<T> dbset;
         protected List<string> includes = [];
+        private bool disposed;
 
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="dataContext"></param>
+        /// <param name="dbcFactory">factory used to create the DbContext owned by this repository</param>
         protected BaseReadRepository(IDbContextFactory<DBC> dbcFactory, IRestToLinqParser<T> parser, ILogger<IReadRepository<DBC, T>> logger)
         {
             this.logger = logger;
-            this.logger.LogInformation($"Creating Repository {this.GetType().Name}");
+            this.logger.LogInformation("Creating Repository {Name}", GetType().Name);
             this.dataContext = dbcFactory.CreateDbContext();
             this.restParser = parser;
             dbset = DataContext.Set<T>();
 
-            var props = typeof(T).GetProperties().ToList();
-
-            GetIncludes(props);
+            GetIncludes();
         }
 
         public bool AlwaysIncludeChildren { get; set; }
 
-        private void GetIncludes(List<PropertyInfo> props)
+        /// <summary>
+        /// Collects the navigation properties of T from the EF Core model, for use with Include()
+        /// </summary>
+        private void GetIncludes()
         {
-            this.includes = new List<string>();
-            props.ForEach(prop =>
+            var entityType = dataContext.Model.FindEntityType(typeof(T));
+            if (entityType == null)
             {
-                try
-                {
-                    {
+                logger.LogWarning("Repository: {Name} entity type {Type} is not part of the model", GetType().Name, typeof(T).Name);
+                return;
+            }
 
-                        if (prop.PropertyType.IsGenericType)
-                        {
-                            this.logger.LogInformation($"adding property collection: {prop.Name}");
-                            this.includes.Add(prop.Name);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    this.logger.LogError($"error checking property type: {prop.PropertyType} error: {ex.Message}");
+            this.includes = entityType.GetNavigations().Select(n => n.Name)
+                .Concat(entityType.GetSkipNavigations().Select(n => n.Name))
+                .ToList();
 
-                }
-
-
-            });
+            logger.LogInformation("Repository: {Name} navigation properties: {Includes}", GetType().Name, string.Join(", ", includes));
         }
 
         protected DbContext DataContext
@@ -84,7 +76,7 @@ namespace Core.Common
 
         public ApiResult<T> GetAll(string restQuery)
         {
-            this.logger.LogInformation($"Repository: {this.GetType().Name} running restQuery: {restQuery}");
+            this.logger.LogInformation("Repository: {Name} running restQuery: {Query}", GetType().Name, restQuery);
 
             var dbResult = GetAllData();
 
@@ -110,6 +102,37 @@ namespace Core.Common
                 }
             }
             return dbResult;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed) return;
+            if (disposing)
+            {
+                dataContext.Dispose();
+            }
+            disposed = true;
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            await DisposeAsyncCore().ConfigureAwait(false);
+            Dispose(false);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual async ValueTask DisposeAsyncCore()
+        {
+            if (!disposed)
+            {
+                await dataContext.DisposeAsync().ConfigureAwait(false);
+            }
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Core.Common.DataModels.Interfaces
 {
-    public interface IModelWithStringId
+    public interface IModelWithStringId : IModel
     {
         string Id { get; set; }
     }

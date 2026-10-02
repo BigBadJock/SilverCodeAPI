@@ -13,6 +13,7 @@
     <Copyright>2025</Copyright>
     <Version>1.2026.506.2224</Version>
     <PackageReleaseNotes>
+      2.0.0 - IModelWithGuidId and IModelWithStringId extend IModel
       1.2.6 - removed some old code
       1.2.5 - upgradge to net9.0
       1.2.0 - Add GuidId, IntId, StringId. Add AddBatch to repository. Update to DotNet 7
@@ -26,7 +27,7 @@
       1.0.2 - remove UserClaim
       1.0.1 - Updated CustomClaimTyp and UserClaim
     </PackageReleaseNotes>
-    <IncrementVersionOnBuild>1.yyyy.Mdd.Hmm</IncrementVersionOnBuild>
+    <IncrementVersionOnBuild>2.yyyy.Mdd.Hmm</IncrementVersionOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

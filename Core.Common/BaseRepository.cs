@@ -1,4 +1,4 @@
-﻿using Ardalis.GuardClauses;
+using Ardalis.GuardClauses;
 using Core.Common.Contracts;
 using Core.Common.DataModels;
 using Core.Common.DataModels.Interfaces;
@@ -21,7 +21,7 @@ namespace Core.Common
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="dataContext"></param>
+        /// <param name="dbContextFactory">factory used to create the DbContext owned by this repository</param>
         protected BaseRepository(IDbContextFactory<DBC> dbContextFactory, IRestToLinqParser<T> parser, ILogger<IRepository<DBC, T>> logger) : base(dbContextFactory, parser, logger)
         {
         }
@@ -37,41 +37,44 @@ namespace Core.Common
                 {
                     _ = await dataContext.SaveChangesAsync();
                 }
-                this.logger.LogInformation($"Repository: {this.GetType().Name} added new entity");
+                this.logger.LogInformation("Repository: {Name} added new entity of type {Type}", this.GetType().Name, typeof(T).Name);
                 return added.Entity;
             }
             catch (ArgumentNullException)
             {
-                this.logger.LogError($"Repository: {this.GetType().Name} tried to add a null entity");
+                this.logger.LogError("Repository: {Name} tried to add a null entity", this.GetType().Name);
                 throw;
             }
             catch (DbUpdateException e)
             {
-                this.logger.LogError($"Repository: {this.GetType().Name} failed throwing exception: {e} when trying to add an entity", e);
+                this.logger.LogError(e, "Repository: {Name} failed when trying to add entity of type {Type}", this.GetType().Name, typeof(T).Name);
                 throw;
             }
         }
 
-        public async Task AddBatch(IEnumerable<T> entities, int batchSize, IProgress<ProgressReport> progress)
+        public virtual async Task AddBatch(IEnumerable<T> entities, int batchSize, IProgress<ProgressReport>? progress)
         {
+            Guard.Against.Null(entities, nameof(entities));
+            Guard.Against.NegativeOrZero(batchSize, nameof(batchSize));
+
             var entityList = entities.ToList();
             int total = entityList.Count;
             string message = $"Saving {total} {typeof(T).Name}";
             int count = 0;
-            int batchCount = 0;
             foreach (T entity in entityList)
             {
                 await this.Add(entity, false);
-                if (batchCount > batchSize)
+                count++;
+                if (count % batchSize == 0)
                 {
                     await this.Commit();
-                    batchCount = 0;
                 }
-                batchCount++;
-                count++;
-                progress.Report(new ProgressReport { Message = message, TotalProgress = total, CurrentProgress = count });
+                progress?.Report(new ProgressReport { Message = message, TotalProgress = total, CurrentProgress = count });
             }
-            await this.Commit();
+            if (count % batchSize != 0)
+            {
+                await this.Commit();
+            }
         }
 
         public async Task Commit()
@@ -102,37 +105,49 @@ namespace Core.Common
 
         }
 
+        /// <summary>
+        /// Deletes all entities matching the condition
+        /// </summary>
+        /// <returns>true if at least one entity was deleted, false if nothing matched</returns>
         public virtual async Task<bool> Delete(Expression<Func<T, bool>> where, bool commit = true)
         {
             try
             {
-                IEnumerable<T> objects = dbset.Where<T>(where).AsEnumerable();
-                foreach (T obj in objects)
+                List<T> objects = await dbset.Where(where).ToListAsync().ConfigureAwait(false);
+                if (objects.Count == 0)
                 {
-                    dbset.Remove(obj);
-                    this.logger.LogInformation("Repository: {Name} removing entity of type {Type}", this.GetType().Name, typeof(T).Name);
+                    this.logger.LogInformation("Repository: {Name} no entities of type {Type} matched delete condition", this.GetType().Name, typeof(T).Name);
+                    return false;
                 }
+
+                dbset.RemoveRange(objects);
                 if (commit)
                 {
                     await dataContext.SaveChangesAsync().ConfigureAwait(false);
                 }
-                this.logger.LogInformation($"Repository: {this.GetType().Name} deleting multiple entities successful");
+                this.logger.LogInformation("Repository: {Name} deleted {Count} entities of type {Type}", this.GetType().Name, objects.Count, typeof(T).Name);
                 return true;
             }
             catch (DbUpdateException e)
             {
-                this.logger.LogError($"Repository: {this.GetType().Name} failed throwing exception: {e} when trying to deleting multiple entries", e);
+                this.logger.LogError(e, "Repository: {Name} failed when trying to delete multiple entities of type {Type}", this.GetType().Name, typeof(T).Name);
                 throw;
             }
         }
 
+        /// <summary>
+        /// Updates the entity, setting LastUpdated. Created and CreatedBy are never overwritten.
+        /// </summary>
         public virtual async Task<T> Update(T entity, bool commit = true)
         {
             try
             {
                 Guard.Against.Null(entity, nameof(entity));
-                dbset.Attach(entity);
-                dataContext.Entry(entity).State = EntityState.Modified;
+                entity.LastUpdated = DateTime.UtcNow;
+                var entry = dataContext.Entry(entity);
+                entry.State = EntityState.Modified;
+                entry.Property(nameof(IModel.Created)).IsModified = false;
+                entry.Property(nameof(IModel.CreatedBy)).IsModified = false;
                 if (commit)
                 {
                     await dataContext.SaveChangesAsync().ConfigureAwait(false);

@@ -55,7 +55,7 @@ namespace Core.Common
             }
             catch (DbUpdateException ex)
             {
-                this.logger.LogError("Repository: {name} failed throwing error: {error} when trying to delete id : [{id}]", this.GetType().Name, ex.Message, id);
+                this.logger.LogError(ex, "Repository: {Name} failed when trying to delete entity of type {Type} with id {Id}", this.GetType().Name, typeof(T).Name, id);
                 return false;
             }
 
