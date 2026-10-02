@@ -2,9 +2,8 @@
 
 [![.NET](https://img.shields.io/badge/.NET-10.0-purple)](https://dotnet.microsoft.com/)
 [![NuGet](https://img.shields.io/badge/NuGet-available-blue)](https://github.com/BigBadJock/SilverCodeAPI/packages)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A .NET 10 library providing infrastructure for data access patterns including **Repository**, **Unit of Work**, and **Data Service** implementations with built-in REST query support via [REST-Parser](https://github.com/BigBadJock/REST-Parser).
+A set of .NET 10 NuGet packages providing interfaces and abstract base classes for building API services using the **Repository** and **Data Service** patterns on top of Entity Framework Core, with built-in URL-driven filtering, sorting and pagination via [REST-Parser](https://github.com/BigBadJock/REST-Parser).
 
 ---
 
@@ -14,38 +13,36 @@ A .NET 10 library providing infrastructure for data access patterns including **
 - [Architecture](#architecture)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
-- [Core Concepts](#core-concepts)
-- [Repository Pattern](#repository-pattern)
+- [Repositories](#repositories)
 - [Data Services](#data-services)
 - [Unit of Work](#unit-of-work)
 - [Data Models](#data-models)
-- [REST Query Integration](#rest-query-integration)
+- [REST Query Syntax](#rest-query-syntax)
 - [Auditing](#auditing)
 - [Best Practices](#best-practices)
+- [Known Limitations](#known-limitations)
 - [Troubleshooting](#troubleshooting)
+- [Additional Resources](#additional-resources)
 
 ---
 
-
 ## Overview
 
-SilverCodeAPI is a collection of NuGet packages that provide:
-
-- **Generic Repository Pattern** — CRUD operations with type-safe querying
-- **Data Service Layer** — Business logic abstraction over repositories
-- **REST Query Support** — Integrated with REST-Parser for URL-driven filtering, sorting and pagination
-- **Multiple ID Types** — Support for `int`, `Guid`, and `string` identifiers
-- **Audit Tracking** — Built-in creation and modification tracking
-- **Unit of Work** — Transaction management across repositories
-- **Read-Only Repositories** — Separate interfaces for read and write operations
+- **Generic Repository Pattern** — CRUD operations over an EF Core `DbSet<T>`
+- **Data Service Layer** — a logging/business-logic layer over repositories
+- **REST Query Support** — URL-driven filtering, sorting and pagination via REST-Parser
+- **Multiple ID Types** — `int`, `Guid` and `string` primary keys
+- **Audit Fields** — `Created`, `CreatedBy`, `LastUpdated`, `LastUpdatedBy` and `IsDeleted` on every entity
+- **Read-Only Repositories** — separate interfaces and base classes for read-only access
+- **Auth DTOs** — `Credentials`, `RefreshTokenCredentials`, `JWTSettings`, `BaseUser` and `IBaseTokenService`
 
 ### Packages
 
-| Package | Description |
-|---------|-------------|
-| `Core.Common.Contracts` | Interfaces for repositories, data services, and contracts |
-| `Core.Common.DataModels` | Base entity models and DTOs |
-| `Core.Common` | Concrete implementations of repository and service patterns |
+| Package | Description | Depends on |
+|---------|-------------|------------|
+| `Core.Common.DataModels` | Base entity models, DTOs and model interfaces | `Microsoft.AspNetCore.Identity.EntityFrameworkCore` |
+| `Core.Common.Contracts` | Repository, data service, auditor, unit-of-work and token service interfaces | `Core.Common.DataModels`, `Microsoft.EntityFrameworkCore`, `REST-Parser` |
+| `Core.Common` | Abstract base implementations of the repositories, data services and auditor | `Core.Common.Contracts`, `Ardalis.GuardClauses` |
 
 ---
 
@@ -53,39 +50,54 @@ SilverCodeAPI is a collection of NuGet packages that provide:
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│              Your API Controller                     │
+│              Your API Controller                    │
 └──────────────────┬──────────────────────────────────┘
-                   │
                    ▼
 ┌─────────────────────────────────────────────────────┐
-│           Data Service Layer                         │
-│  (BaseDataService, BaseDataServiceWithIntId, etc.)   │
+│  Data Service Layer                                 │
+│  (BaseDataServiceWithIntId, ...WithGuidId, ...)     │
 └──────────────────┬──────────────────────────────────┘
-                   │
                    ▼
 ┌─────────────────────────────────────────────────────┐
-│           Repository Layer                           │
-│  (BaseRepository, BaseRepositoryWithIntId, etc.)     │
+│  Repository Layer                                   │
+│  (BaseRepositoryWithIntId, ...WithGuidId, ...)      │
 └──────────────────┬──────────────────────────────────┘
-                   │
                    ▼
 ┌─────────────────────────────────────────────────────┐
-│         Entity Framework Core DbContext              │
+│  EF Core DbContext (one per repository instance,    │
+│  created from IDbContextFactory<DBC>)               │
 └─────────────────────────────────────────────────────┘
+```
+
+### Type map
+
+```
+Core.Common.Contracts             Core.Common                     Core.Common.DataModels
+─────────────────────             ───────────                     ──────────────────────
+IReadRepository<DBC,T>        ←─  BaseReadRepository              BaseModel
+IReadRepositoryWithIntId      ←─  BaseReadRepositoryWithIntId     BaseModelWithIntId
+IReadRepositoryWithGuidId     ←─  BaseReadRepositoryWithGuidId    BaseModelWithGuidId
+IReadRepositoryWithStringId   ←─  BaseReadRepositoryWithStringId  BaseModelWithStringId
+                                                                  BaseLookupModel
+IRepository<DBC,T>            ←─  BaseRepository                  BaseUser
+IRepositoryWithIntId          ←─  BaseRepositoryWithIntId
+IRepositoryWithGuidId         ←─  BaseRepositoryWithGuidId        ApiResult<T>
+IRepositoryWithStringId       ←─  BaseRepositoryWithStringId      Pagination
+                                                                  ProgressReport
+IDataService<DBC,T>           ←─  BaseDataService                 Credentials
+IDataServiceWithIntId         ←─  BaseDataServiceWithIntId        RefreshTokenCredentials
+IDataServiceWithGuidId        ←─  BaseDataServiceWithGuidId       JWTSettings
+IDataServiceWithStringId      ←─  BaseDataServiceWithStringId
+
+IAuditor                      ←─  BaseAuditor
+IUnitOfWork                       (no base implementation)
+IBaseTokenService<DBC,T>          (no base implementation)
+                                  Helpers.ObjectExtensions
 ```
 
 ---
 
 ## Installation
-
-### Package Manager Console
-
-```powershell
-Install-Package Core.Common.Contracts
-Install-Package Core.Common.DataModels
-Install-Package Core.Common
-Install-Package REST-Parser
-```
 
 ### .NET CLI
 
@@ -93,8 +105,9 @@ Install-Package REST-Parser
 dotnet add package Core.Common.Contracts
 dotnet add package Core.Common.DataModels
 dotnet add package Core.Common
-dotnet add package REST-Parser
 ```
+
+`REST-Parser` is brought in transitively by `Core.Common.Contracts`; add it explicitly only if you need a different version.
 
 ### Package References
 
@@ -103,86 +116,84 @@ dotnet add package REST-Parser
   <PackageReference Include="Core.Common.Contracts" Version="1.2026.*" />
   <PackageReference Include="Core.Common.DataModels" Version="1.2026.*" />
   <PackageReference Include="Core.Common" Version="1.2026.*" />
-  <PackageReference Include="REST-Parser" Version="1.2.5" />
 </ItemGroup>
 ```
 
+Package versions are generated at build time in the form `1.yyyy.Mdd.Hmm`.
+
 ### GitHub Packages
 
-1. Get a personal access token from **GitHub → Settings → Developer Settings → Personal Access Tokens**
-2. Run: `nuget setApiKey <accesstoken> -source github`
-3. Add a `nuget.config` to your project root (add it to `.gitignore` — it contains your token):
+1. Create a personal access token with `read:packages` scope (**GitHub → Settings → Developer Settings → Personal Access Tokens**).
+2. Add a `nuget.config` to your solution root. Prefer environment variables over a hard-coded token:
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
   <packageSources>
     <clear />
-    <add key="nuget.org" value="https://api.nuget.org/v3/index.json"/>
-    <add key="github" value="https://nuget.pkg.github.com/bigbadjock/index.json"/>
+    <add key="nuget.org" value="https://api.nuget.org/v3/index.json" />
+    <add key="github" value="https://nuget.pkg.github.com/bigbadjock/index.json" />
   </packageSources>
   <packageSourceCredentials>
     <github>
-      <add key="UserName" value="bigbadjock"/>
-      <add key="ClearTextPassword" value="<accessToken>"/>
+      <add key="Username" value="%GITHUB_PACKAGES_USER%" />
+      <add key="ClearTextPassword" value="%GITHUB_PACKAGES_PAT%" />
     </github>
   </packageSourceCredentials>
 </configuration>
 ```
 
+If you do put a token directly in `nuget.config`, add the file to `.gitignore`.
+
 ---
 
 ## Quick Start
 
-### 1. Define Your Entity
+### 1. Define your entities
 
-Choose a base model based on your ID type:
+Inherit from the base model matching your ID type:
 
 ```csharp
 using Core.Common.DataModels;
 
-// Integer ID
 public class Product : BaseModelWithIntId
 {
-    public string Name { get; set; }
-    public string Category { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Category { get; set; } = string.Empty;
     public decimal Price { get; set; }
     public int Stock { get; set; }
 }
 
-// GUID ID
 public class Order : BaseModelWithGuidId
 {
-    public string OrderNumber { get; set; }
+    public string OrderNumber { get; set; } = string.Empty;
     public decimal Total { get; set; }
-    public DateTime OrderDate { get; set; }
 }
 
-// String ID
 public class UserProfile : BaseModelWithStringId
 {
-    public string Username { get; set; }
-    public string Email { get; set; }
+    public string Email { get; set; } = string.Empty;
 }
 ```
 
-### 2. Create Your DbContext
+### 2. Create your DbContext
 
 ```csharp
 public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-    public DbSet<Product> Products { get; set; }
-    public DbSet<Order> Orders { get; set; }
+    public DbSet<Product> Products => Set<Product>();
+    public DbSet<Order> Orders => Set<Order>();
 }
 ```
 
-### 3. Implement a Repository
+### 3. Implement a repository
 
 ```csharp
 using Core.Common;
 using Core.Common.Contracts;
+using REST_Parser;
 
 public interface IProductRepository : IRepositoryWithIntId<AppDbContext, Product> { }
 
@@ -196,7 +207,9 @@ public class ProductRepository : BaseRepositoryWithIntId<AppDbContext, Product>,
 }
 ```
 
-### 4. Implement a Data Service
+### 4. Implement a data service
+
+Take your own repository interface in the constructor — it derives from `IRepositoryWithIntId<,>`, so it can be passed straight to the base class, and it is the type you register in DI.
 
 ```csharp
 public interface IProductService : IDataServiceWithIntId<AppDbContext, Product> { }
@@ -204,13 +217,13 @@ public interface IProductService : IDataServiceWithIntId<AppDbContext, Product> 
 public class ProductService : BaseDataServiceWithIntId<AppDbContext, Product>, IProductService
 {
     public ProductService(
-        IRepositoryWithIntId<AppDbContext, Product> repository,
+        IProductRepository repository,
         ILogger<IDataServiceWithIntId<AppDbContext, Product>> logger)
         : base(repository, logger) { }
 }
 ```
 
-### 5. Register Services
+### 5. Register services
 
 ```csharp
 // Program.cs
@@ -224,7 +237,7 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
 ```
 
-### 6. Use in a Controller
+### 6. Use in a controller
 
 ```csharp
 [ApiController]
@@ -238,15 +251,17 @@ public class ProductsController : ControllerBase
         _productService = productService;
     }
 
-    // GET: api/products?category=Electronics&price[lt]=1000&$sort_by=price[ASC]&$page=1&$pagesize=20
+    // GET api/products?q=category=Electronics%26price[lt]=1000%26$sort_by=price[ASC]%26$page=1%26$pagesize=20
     [HttpGet]
-    public IActionResult Search([FromQuery] string q = "$sort_by=Id&$pagesize=20")
+    public IActionResult Search([FromQuery] string? q)
     {
-        var result = _productService.Search(q);
-        return Ok(new { data = result.Data, pagination = result.Pagination });
+        if (string.IsNullOrWhiteSpace(q))
+            q = "$sort_by=Id&$page=1&$pagesize=20";
+
+        return Ok(_productService.Search(q));
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
         var product = await _productService.GetById(id);
@@ -260,90 +275,100 @@ public class ProductsController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] Product product)
     {
         if (id != product.Id) return BadRequest();
         return Ok(await _productService.Update(product));
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
-    {
-        var success = await _productService.Delete(p => p.Id == id);
-        return success ? NoContent() : NotFound();
-    }
+        => await _productService.Delete(id) ? NoContent() : NotFound();
 }
 ```
 
----
-
-## Core Concepts
-
-### ID Type Variants
-
-SilverCodeAPI provides three sets of base classes for different ID types:
-
-| Variant | Model | Repository | Service |
-|---------|-------|------------|---------|
-| Integer | `BaseModelWithIntId` | `BaseRepositoryWithIntId<DBC,T>` | `BaseDataServiceWithIntId<DBC,T>` |
-| GUID | `BaseModelWithGuidId` | `BaseRepositoryWithGuidId<DBC,T>` | `BaseDataServiceWithGuidId<DBC,T>` |
-| String | `BaseModelWithStringId` | `BaseRepositoryWithStringId<DBC,T>` | `BaseDataServiceWithStringId<DBC,T>` |
-
-Read-only variants are also available:
-
-| Variant | Class |
-|---------|-------|
-| Integer | `BaseReadRepositoryWithIntId<DBC,T>` |
-| GUID | `BaseReadRepositoryWithGuidId<DBC,T>` |
-| String | `BaseReadRepositoryWithStringId<DBC,T>` |
+> Tip: to accept the REST query as the raw request query string instead of a `q` parameter, pass `Request.QueryString.Value?.TrimStart('?')` to `Search`.
 
 ---
 
-## Repository Pattern
+## Repositories
 
-### Available Methods
+### ID type variants
+
+| ID type | Model | Repository | Read-only repository | Data service |
+|---------|-------|------------|----------------------|--------------|
+| `int` | `BaseModelWithIntId` | `BaseRepositoryWithIntId<DBC,T>` | `BaseReadRepositoryWithIntId<DBC,T>` | `BaseDataServiceWithIntId<DBC,T>` |
+| `Guid` | `BaseModelWithGuidId` | `BaseRepositoryWithGuidId<DBC,T>` | `BaseReadRepositoryWithGuidId<DBC,T>` | `BaseDataServiceWithGuidId<DBC,T>` |
+| `string` | `BaseModelWithStringId` | `BaseRepositoryWithStringId<DBC,T>` | `BaseReadRepositoryWithStringId<DBC,T>` | `BaseDataServiceWithStringId<DBC,T>` |
+
+Constructor logger types differ slightly: write repositories take `ILogger<IRepository<DBC,T>>`; read-only repositories take `ILogger<IReadRepositoryWithXxxId<DBC,T>>`.
+
+### Members
 
 ```csharp
-// Get all records as IQueryable
-IQueryable<Product> products = repository.GetAll();
+// IReadRepository<DBC,T>
+DbSet<T>       DbSet { get; }
+bool           AlwaysIncludeChildren { get; set; }
+IQueryable<T>  GetAll();                         // deferred query over the DbSet
+ApiResult<T>   GetAll(string restQuery);         // executes the query, returns data + pagination
 
-// Get with REST query — returns ApiResult<T> with pagination metadata
-ApiResult<Product> result = repository.GetAll("category=Electronics&price[lt]=1000");
+// IReadRepositoryWithXxxId<DBC,T>
+Task<T?>       GetById(TId id);                  // DbSet.FindAsync — null if not found
 
-// Get by ID — returns null if not found
+// IRepository<DBC,T>
+Task<T>        Add(T entity, bool commit = true);
+Task<T>        Update(T entity, bool commit = true);
+Task<bool>     Delete(Expression<Func<T, bool>> where, bool commit = true);
+Task           AddBatch(IEnumerable<T> entities, int batchSize, IProgress<ProgressReport> progress);
+Task           Commit();                         // SaveChangesAsync on this repository's context
+
+// IRepositoryWithXxxId<DBC,T>
+Task<bool>     Delete(TId id, bool commit = true);
+```
+
+`BaseRepository` also exposes a public `virtual Task<bool> Delete(T entity, bool commit = true)` that is not on the interface.
+
+### Behaviour notes
+
+| Method | Behaviour |
+|--------|-----------|
+| `Add` | Sets `Created` and `LastUpdated` to `DateTime.UtcNow`. Throws on `null` or `DbUpdateException`. |
+| `Update` | Attaches the entity and marks **all** properties modified. Does not touch any audit fields. |
+| `Delete(id)` | Hard delete. Returns `false` if the entity is not found **or** a `DbUpdateException` occurs. |
+| `Delete(entity)` | Hard delete. Returns `false` on `DbUpdateException`. |
+| `Delete(where)` | Hard delete of all matches. Returns `true` even if nothing matched; rethrows `DbUpdateException`. |
+| `AddBatch` | Adds with `commit: false`, calls `Commit()` roughly every `batchSize` entities and once at the end, reporting progress after each entity. `progress` must not be `null`. |
+| `GetById` | Uses `FindAsync`; never applies `Include`s. |
+
+### Examples
+
+```csharp
+IQueryable<Product> query = repository.GetAll();
+
+ApiResult<Product> page = repository.GetAll("category=Electronics&price[lt]=1000&$page=1&$pagesize=20");
+
 Product? product = await repository.GetById(5);
 
-// Add entity (commits immediately by default)
-Product newProduct = await repository.Add(product);
-
-// Add without immediate commit
 await repository.Add(product, commit: false);
+await repository.Add(other, commit: false);
 await repository.Commit();
 
-// Batch add with progress reporting
 var progress = new Progress<ProgressReport>(r =>
     Console.WriteLine($"{r.Message}: {r.CurrentProgress}/{r.TotalProgress}"));
-
 await repository.AddBatch(products, batchSize: 100, progress);
 
-// Update
-Product updated = await repository.Update(product);
-
-// Delete by predicate
-bool deleted = await repository.Delete(p => p.Id == 5);
-
-// Delete by ID (typed repositories)
 bool deleted = await repository.Delete(5);
 ```
 
-### Custom Repository Methods
+### Custom repository methods
+
+The underlying `DbSet<T>` is available as the protected field `dbset` (and the public `DbSet` property):
 
 ```csharp
 public interface IProductRepository : IRepositoryWithIntId<AppDbContext, Product>
 {
-    Task<IEnumerable<Product>> GetLowStockProducts(int threshold);
-    Task<decimal> GetAveragePriceByCategory(string category);
+    Task<List<Product>> GetLowStockProducts(int threshold);
 }
 
 public class ProductRepository : BaseRepositoryWithIntId<AppDbContext, Product>, IProductRepository
@@ -354,12 +379,8 @@ public class ProductRepository : BaseRepositoryWithIntId<AppDbContext, Product>,
         ILogger<IRepository<AppDbContext, Product>> logger)
         : base(dbContextFactory, parser, logger) { }
 
-    public async Task<IEnumerable<Product>> GetLowStockProducts(int threshold)
-        => await dbset.Where(p => p.Stock < threshold && !p.IsDeleted).ToListAsync();
-
-    public async Task<decimal> GetAveragePriceByCategory(string category)
-        => await dbset.Where(p => p.Category == category && !p.IsDeleted)
-                      .AverageAsync(p => p.Price);
+    public Task<List<Product>> GetLowStockProducts(int threshold)
+        => dbset.Where(p => p.Stock < threshold && !p.IsDeleted).ToListAsync();
 }
 ```
 
@@ -367,58 +388,57 @@ public class ProductRepository : BaseRepositoryWithIntId<AppDbContext, Product>,
 
 ## Data Services
 
-### Built-in Methods
+Data services wrap a repository and add entry/exit/error logging. All methods except `GetAll()` are `virtual`.
 
 ```csharp
-// All data services provide:
-Task<T>           Add(T model)
-Task<T>           Update(T model)
-Task<bool>        Delete(Expression<Func<T, bool>> where)
-ApiResult<T>      Search(string restQuery)
+// IDataService<DBC,T>
+Task<T>        Add(T model);                     // repository.Add(model)  — commits
+Task<T>        Update(T model);                  // repository.Update(model) — commits
+Task<bool>     Delete(Expression<Func<T, bool>> where);
+IQueryable<T>  GetAll();                         // repository.GetAll()
+ApiResult<T>   Search(string restQuery);         // repository.GetAll(restQuery)
 
-// ID-typed services additionally provide:
-Task<T?>          GetById(int id)      // int variant
-Task<T?>          GetById(Guid id)     // Guid variant
-Task<T?>          GetById(string id)   // string variant
-Task<bool>        Delete(int id, ...)  // etc.
+// IDataServiceWithXxxId<DBC,T>
+Task<T?>       GetById(TId id);
+Task<bool>     Delete(TId id, bool commit = true);
 ```
 
-### Custom Data Service
+The base class keeps the repository in the protected field `repository` (typed as `IRepository<DBC,T>`).
+
+### Custom data service
+
+Keep a typed reference to your own repository interface for custom methods:
 
 ```csharp
 public interface IProductService : IDataServiceWithIntId<AppDbContext, Product>
 {
     Task<bool> AdjustStock(int productId, int quantity);
-    Task<IEnumerable<Product>> GetProductsNeedingRestock(int threshold);
 }
 
 public class ProductService : BaseDataServiceWithIntId<AppDbContext, Product>, IProductService
 {
-    private new readonly IProductRepository repository;
+    private readonly IProductRepository products;
 
     public ProductService(
-        IRepositoryWithIntId<AppDbContext, Product> repository,
+        IProductRepository repository,
         ILogger<IDataServiceWithIntId<AppDbContext, Product>> logger)
         : base(repository, logger)
     {
-        this.repository = (IProductRepository)repository;
+        products = repository;
     }
 
     public async Task<bool> AdjustStock(int productId, int quantity)
     {
-        var product = await repository.GetById(productId);
+        var product = await products.GetById(productId);
         if (product is null) return false;
 
-        product.Stock += quantity;
-        if (product.Stock < 0)
+        if (product.Stock + quantity < 0)
             throw new InvalidOperationException("Insufficient stock");
 
-        await repository.Update(product);
+        product.Stock += quantity;
+        await products.Update(product);
         return true;
     }
-
-    public async Task<IEnumerable<Product>> GetProductsNeedingRestock(int threshold)
-        => await repository.GetLowStockProducts(threshold);
 }
 ```
 
@@ -426,116 +446,118 @@ public class ProductService : BaseDataServiceWithIntId<AppDbContext, Product>, I
 
 ## Unit of Work
 
-Use `IUnitOfWork` to coordinate multiple repositories in a single transaction:
+`IUnitOfWork` is a contract only:
 
 ```csharp
-public interface IAppUnitOfWork : IUnitOfWork
+public interface IUnitOfWork
 {
-    IProductRepository Products { get; }
-    IOrderRepository Orders { get; }
+    Task CommitAsync(CancellationToken cancellationToken = default);
 }
+```
 
-public class AppUnitOfWork : IAppUnitOfWork
+**Important:** every repository creates its **own** `DbContext` from `IDbContextFactory<DBC>` in its constructor. Changes staged with `commit: false` live only in that repository's context, so:
+
+- Calling `SaveChangesAsync` on some other injected `DbContext` will **not** save them.
+- Two repositories cannot share a single `SaveChanges` call or a transaction.
+- An entity loaded through one repository is not tracked by another.
+
+A unit of work over these repositories must therefore commit each repository:
+
+```csharp
+public class OrderUnitOfWork : IUnitOfWork
 {
-    private readonly AppDbContext _context;
-
-    public AppUnitOfWork(
-        AppDbContext context,
-        IProductRepository productRepository,
-        IOrderRepository orderRepository)
+    public OrderUnitOfWork(IProductRepository products, IOrderRepository orders)
     {
-        _context = context;
-        Products = productRepository;
-        Orders = orderRepository;
+        Products = products;
+        Orders = orders;
     }
 
     public IProductRepository Products { get; }
     public IOrderRepository Orders { get; }
 
     public async Task CommitAsync(CancellationToken cancellationToken = default)
-        => await _context.SaveChangesAsync(cancellationToken);
-}
-
-// Usage
-public async Task<Order> CreateOrderWithStockUpdate(Order order, int productId, int quantity)
-{
-    var createdOrder = await _unitOfWork.Orders.Add(order, commit: false);
-
-    var product = await _unitOfWork.Products.GetById(productId);
-    if (product is null) throw new InvalidOperationException("Product not found");
-    product.Stock -= quantity;
-    await _unitOfWork.Products.Update(product, commit: false);
-
-    await _unitOfWork.CommitAsync();
-    return createdOrder;
+    {
+        await Orders.Commit();
+        await Products.Commit();   // not atomic with the line above
+    }
 }
 ```
+
+If you need atomic multi-entity writes, put them in a single repository (using `DataContext`/`dbset` and related `DbSet`s on the same context) or use EF Core directly.
 
 ---
 
 ## Data Models
 
-### Base Model Properties
+### `BaseModel`
 
-All entities inherit these audit fields from `BaseModel`:
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `IsDeleted` | `bool` | `false` | Soft-delete flag (not enforced by the base classes) |
+| `Created` | `DateTime` | `DateTime.UtcNow` | Creation timestamp (re-set by `Add`) |
+| `CreatedBy` | `string?` | `null` | Creator — populate yourself |
+| `LastUpdated` | `DateTime?` | `null` | Set by `Add`; not set by `Update` |
+| `LastUpdatedBy` | `string?` | `null` | Last updater — populate yourself |
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `IsDeleted` | `bool` | Soft-delete flag (default `false`) |
-| `Created` | `DateTime` | UTC creation timestamp |
-| `CreatedBy` | `string?` | Identity of creator |
-| `LastUpdated` | `DateTime?` | UTC last-update timestamp |
-| `LastUpdatedBy` | `string?` | Identity of last updater |
+All of these are marked `[Editable(false)]`.
 
-### ID Models
+### ID models
 
 ```csharp
-public abstract class BaseModelWithIntId : BaseModel
+public abstract class BaseModelWithIntId : BaseModel, IModelWithIntId
 {
     public int Id { get; set; }
 }
 
-public abstract class BaseModelWithGuidId : BaseModel
+public abstract class BaseModelWithGuidId : BaseModel, IModelWithGuidId
 {
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }
 }
 
-public abstract class BaseModelWithStringId : BaseModel
+public abstract class BaseModelWithStringId : BaseModel, IModelWithStringId
 {
     [Required]
     public string Id { get; set; } = string.Empty;
 }
 ```
 
-### Lookup Models
-
-For reference/lookup data with integer IDs:
+### Lookup models
 
 ```csharp
 public abstract class BaseLookupModel : BaseModelWithIntId, ILookupModel
 {
     [Required]
-    public string Name { get; set; }
+    public required string Name { get; set; }
 }
 
-// Usage
 public class Category : BaseLookupModel
 {
-    // Inherits: Id, Name, IsDeleted, Created, CreatedBy, etc.
-    public List<Product> Products { get; set; }
+    public List<Product> Products { get; set; } = [];
+}
+
+var category = new Category { Name = "Electronics" };   // Name is a required member
+```
+
+### Users
+
+```csharp
+public abstract class BaseUser : IdentityUser, IBaseUser
+{
+    public required string FirstName { get; set; }
+    public required string LastName { get; set; }
 }
 ```
 
-### DTOs
+`IBaseTokenService<DBC, T>` (where `T : IdentityUser, IBaseUser`) defines `BuildAccessToken`, `ValidateToken`, `GenerateRefreshToken` and `RefreshAccessToken`; no implementation is provided.
 
-The following result types are `record`s with `init`-only properties:
+### DTOs
 
 ```csharp
 public record ApiResult<T>
 {
     public IEnumerable<T> Data { get; init; } = [];
-    public Pagination? Pagination { get; init; }
+    public Pagination? Pagination { get; init; }      // null unless a page size was requested
 }
 
 public record Pagination
@@ -546,45 +568,83 @@ public record Pagination
     public int TotalCount { get; init; }
 }
 
+public record ProgressReport
+{
+    public int CurrentProgress { get; init; }
+    public int TotalProgress { get; init; }
+    public string Message { get; init; } = "Processing";
+}
+
 public record Credentials
 {
     [Required, EmailAddress]
     public string Email { get; init; } = string.Empty;
 
-    [Required, StringLength(256, MinimumLength = 12)]
-    [DataType(DataType.Password)]
+    [Required, StringLength(256, MinimumLength = 12), DataType(DataType.Password)]
     public string Password { get; init; } = string.Empty;
 }
+
+public record RefreshTokenCredentials
+{
+    [Required] public string UserName { get; init; } = string.Empty;
+    [Required] public string RefreshToken { get; init; } = string.Empty;
+}
+
+public class JWTSettings
+{
+    [Required, MinLength(32)] public required string SecretKey { get; set; }   // ≥ 256 bits for HMAC-SHA256
+    [Required] public required string Issuer { get; set; }
+    [Required] public required string Audience { get; set; }
+    public int ExpiryMinutes { get; set; }
+    public int RefreshTokenExpiryMinutes { get; set; }
+}
+```
+
+### Validation helper
+
+`Core.Common.Helpers.ObjectExtensions.IsValid` runs data-annotation validation (including all properties) on any object:
+
+```csharp
+using Core.Common.Helpers;
+
+if (!settings.IsValid(out var errors))
+    throw new InvalidOperationException(string.Join("; ", errors.Select(e => e.ErrorMessage)));
 ```
 
 ---
 
-## REST Query Integration
+## REST Query Syntax
 
-SilverCodeAPI integrates with [REST-Parser](https://github.com/BigBadJock/REST-Parser) to allow URL-driven querying of any entity.
+`Repository.GetAll(string)` and `DataService.Search(string)` pass the query to REST-Parser, which applies it to the `IQueryable<T>` and executes it.
 
-### Query Examples
+### Basic format
+
+```
+field[operator]=value&field2=value2&$sort_by=field[ASC]&$page=1&$pagesize=20
+```
+
+### Examples
 
 ```http
 # Filter by category and price
-GET /api/products?category=Electronics&price[lt]=1000
+category=Electronics&price[lt]=1000
 
 # Sort descending with pagination
-GET /api/products?$sort_by=price[DESC]&$page=1&$pagesize=20
+$sort_by=price[DESC]&$page=1&$pagesize=20
 
 # Contains search
-GET /api/products?name[contains]=Pro&$sort_by=price[DESC]
+name[contains]=Pro&$sort_by=price[DESC]
 
 # Date range
-GET /api/products?releaseDate[ge]=2023-01-01&releaseDate[le]=2023-12-31
+releaseDate[ge]=2023-01-01&releaseDate[le]=2023-12-31
 
-# Complex query
-GET /api/products?category=Electronics&price[ge]=100&price[le]=500&stock[gt]=5&$sort_by=name[ASC]&$page=1&$pagesize=10
+# Multiple sorts
+category=Electronics&$sort_by=brand[ASC]&$sort_by=price[ASC]&$page=1&$pagesize=10
 ```
 
-### Filtering Operators
+### Filtering operators
 
-| Operator | Description | Supported Types |
+| Operator | Description | Supported types |
 |----------|-------------|-----------------|
 | `eq` | Equal to *(default)* | All types |
 | `ne` | Not equal to | All types |
@@ -594,21 +654,32 @@ GET /api/products?category=Electronics&price[ge]=100&price[le]=500&stock[gt]=5&$
 | `le` | Less than or equal | int, double, decimal, DateTime |
 | `contains` | Contains substring *(case-sensitive)* | string |
 
-### Pagination Limits
+Supported field types: `string`, `int`, `double`, `decimal`, `DateTime`, `bool`, `Guid` and their nullable forms.
+
+### Pagination and limits
 
 | Limit | Value |
 |-------|-------|
-| Max query length | 2000 chars |
-| Max filter conditions | 50 |
+| Default page size (when `$pagesize` has no value) | 25 |
 | Max page size | 1000 |
+| Max filter conditions | 50 |
+| Max query length | 2000 chars |
 
-### Exception Handling
+`ApiResult<T>.Pagination` is only populated when the result has a page size, i.e. when `$pagesize` was supplied. Serialised, a paged result looks like:
+
+```json
+{
+  "data": [ ... ],
+  "pagination": { "pageNumber": 1, "pageSize": 20, "pageCount": 5, "totalCount": 98 }
+}
+```
+
+### Exception handling
 
 ```csharp
 try
 {
-    var result = _productService.Search(q ?? "$sort_by=Id&$pagesize=20");
-    return Ok(result);
+    return Ok(_productService.Search(q));
 }
 catch (REST_InvalidFieldnameException ex)
 {
@@ -629,43 +700,18 @@ catch (ArgumentException ex)
 }
 ```
 
+See [Docs/Rest-Parser-Usage.md](Docs/Rest-Parser-Usage.md) for the full syntax.
+
 ---
 
 ## Auditing
 
-### Built-in Audit Fields
+### Audit fields
 
-`Created` and `LastUpdated` are set automatically in UTC by the base repository on `Add` and `Update`. `CreatedBy` and `LastUpdatedBy` are available but require a custom auditor to populate them.
-
-### Custom Auditor
-
-Implement `BaseAuditor` to write to a dedicated audit store. The default implementation logs via `ILogger`:
+The base repository sets `Created` and `LastUpdated` on `Add` only. `Update` leaves all audit fields as supplied by the caller, and because it marks every property modified, a client-supplied `Created`/`CreatedBy` will overwrite the stored values. Populate the user fields (and protect the creation fields) by overriding `Add`/`Update`:
 
 ```csharp
-public class DatabaseAuditor : BaseAuditor
-{
-    private readonly IAuditLogRepository _auditRepo;
-
-    public DatabaseAuditor(ILogger<BaseAuditor> logger, IAuditLogRepository auditRepo)
-        : base(logger)
-    {
-        _auditRepo = auditRepo;
-    }
-
-    public override async Task AuditAsync(string message, CancellationToken cancellationToken = default)
-    {
-        await _auditRepo.Add(new AuditLog { Message = message, Timestamp = DateTime.UtcNow });
-    }
-}
-
-// Register in DI
-builder.Services.AddScoped<IAuditor, DatabaseAuditor>();
-```
-
-### Populating Audit Fields in a Repository
-
-```csharp
-public class ProductRepository : BaseRepositoryWithIntId<AppDbContext, Product>
+public class ProductRepository : BaseRepositoryWithIntId<AppDbContext, Product>, IProductRepository
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -682,157 +728,83 @@ public class ProductRepository : BaseRepositoryWithIntId<AppDbContext, Product>
     private string CurrentUser =>
         _httpContextAccessor.HttpContext?.User?.Identity?.Name ?? "System";
 
-    public override async Task<Product> Add(Product entity, bool commit = true)
+    public override Task<Product> Add(Product entity, bool commit = true)
     {
         entity.CreatedBy = CurrentUser;
-        return await base.Add(entity, commit);
+        entity.LastUpdatedBy = CurrentUser;
+        return base.Add(entity, commit);
     }
 
     public override async Task<Product> Update(Product entity, bool commit = true)
     {
+        entity.LastUpdated = DateTime.UtcNow;
         entity.LastUpdatedBy = CurrentUser;
-        return await base.Update(entity, commit);
+
+        await base.Update(entity, commit: false);
+        var entry = DataContext.Entry(entity);
+        entry.Property(e => e.Created).IsModified = false;
+        entry.Property(e => e.CreatedBy).IsModified = false;
+
+        if (commit) await Commit();
+        return entity;
     }
 }
 ```
 
-### Soft Delete
+### `IAuditor` / `BaseAuditor`
+
+`IAuditor` is a separate audit-log abstraction; the base repositories and services do **not** call it. `BaseAuditor` is an abstract class whose default `AuditAsync` writes `AUDIT: {Message}` to `ILogger`. Derive from it to persist elsewhere and call it from your own code:
 
 ```csharp
-public async Task<bool> SoftDelete(int productId)
+public class DatabaseAuditor : BaseAuditor
 {
-    var product = await repository.GetById(productId);
-    if (product is null) return false;
+    private readonly IAuditLogRepository _auditRepo;
 
-    product.IsDeleted = true;
-    product.LastUpdated = DateTime.UtcNow;
-    await repository.Update(product);
-    return true;
+    public DatabaseAuditor(ILogger<BaseAuditor> logger, IAuditLogRepository auditRepo)
+        : base(logger)
+    {
+        _auditRepo = auditRepo;
+    }
+
+    public override async Task AuditAsync(string message, CancellationToken cancellationToken = default)
+        => await _auditRepo.Add(new AuditLog { Message = message, Timestamp = DateTime.UtcNow });
 }
 
-// Filter soft-deleted records in queries
-public IQueryable<Product> GetActiveProducts()
-    => repository.GetAll().Where(p => !p.IsDeleted);
+builder.Services.AddScoped<IAuditor, DatabaseAuditor>();
+```
+
+### Soft delete
+
+All `Delete` methods are **hard** deletes, and `GetAll` / `GetById` / `Search` do not filter on `IsDeleted`. To use soft delete, set the flag and update, and filter explicitly — or add an EF Core global query filter:
+
+```csharp
+// Soft delete
+product.IsDeleted = true;
+await repository.Update(product);
+
+// AppDbContext.OnModelCreating
+modelBuilder.Entity<Product>().HasQueryFilter(p => !p.IsDeleted);
 ```
 
 ---
 
 ## Best Practices
 
-### 1. Always Use `AddDbContextFactory`
-
-```csharp
-// ✅ Correct — required by the repository base classes
-builder.Services.AddDbContextFactory<AppDbContext>(options =>
-    options.UseSqlServer(connectionString));
-
-// ❌ Avoid — repositories use IDbContextFactory<T> directly
-builder.Services.AddDbContext<AppDbContext>(...);
-```
-
-### 2. Never Block on Async
-
-```csharp
-// ✅ Correct
-var product = await repository.GetById(id);
-
-// ❌ Deadlock risk
-var product = repository.GetById(id).Result;
-```
-
-### 3. Provide REST Query Defaults
-
-```csharp
-[HttpGet]
-public IActionResult Search([FromQuery] string q = "")
-{
-    if (string.IsNullOrWhiteSpace(q))
-        q = "$sort_by=Id&$pagesize=20";
-
-    var result = _service.Search(q);
-    return Ok(result);
-}
-```
-
-### 4. Use DTOs for API Responses
-
-Don't expose entity models directly — exclude audit and soft-delete fields from responses:
-
-```csharp
-var dto = new ProductDto
-{
-    Id = product.Id,
-    Name = product.Name,
-    Price = product.Price
-    // Excludes: CreatedBy, LastUpdatedBy, IsDeleted
-};
-```
-
-### 5. Use `AsNoTracking` for Read-Only Queries
-
-```csharp
-var result = _parser.Run(_context.Products.AsNoTracking(), query);
-```
-
-### 6. Structured Logging
-
-```csharp
-logger.LogInformation("Adding product {Name}", model.Name);
-logger.LogError(ex, "Failed to update product {Id}", model.Id);
-// Never log full entity objects — they may contain PII
-```
+1. **Register with `AddDbContextFactory`.** Repositories require `IDbContextFactory<DBC>`; `AddDbContext` alone will fail to resolve.
+2. **Register repositories and services as scoped.** Each repository holds a `DbContext` for its lifetime; a singleton repository would share one context across requests.
+3. **Never block on async** — `await repository.GetById(id)`, not `.Result`.
+4. **Provide REST query defaults** (e.g. `$sort_by=Id&$page=1&$pagesize=20`) so unbounded queries are not run by accident.
+5. **Use DTOs for API input/output.** Binding entities directly lets clients set `IsDeleted`, `Created`, `CreatedBy` etc. on `Update`.
+6. **Use structured logging** in overrides — `logger.LogInformation("Adding product {Name}", model.Name)` — and avoid logging whole entities.
 
 ---
 
-## Migration Guide
+## Known Limitations
 
-### From Direct EF Core to SilverCodeAPI
-
-**Before:**
-```csharp
-public class ProductsController : ControllerBase
-{
-    private readonly AppDbContext _context;
-
-    [HttpGet]
-    public async Task<IActionResult> GetProducts()
-        => Ok(await _context.Products.ToListAsync());
-
-    [HttpPost]
-    public async Task<IActionResult> CreateProduct(Product product)
-    {
-        _context.Products.Add(product);
-        await _context.SaveChangesAsync();
-        return Ok(product);
-    }
-}
-```
-
-**After:**
-```csharp
-public class ProductsController : ControllerBase
-{
-    private readonly IProductService _productService;
-
-    [HttpGet]
-    public IActionResult GetProducts([FromQuery] string q = "")
-        => Ok(_productService.Search(q ?? "$pagesize=20"));
-
-    [HttpPost]
-    public async Task<IActionResult> CreateProduct(Product product)
-        => Ok(await _productService.Add(product));
-}
-```
-
-### Migration Steps
-
-1. Add NuGet packages
-2. Update entity models to inherit from the appropriate `BaseModel*` class
-3. Create repository interfaces and implementations
-4. Create data service interfaces and implementations
-5. Update DI registrations — swap `AddDbContext` for `AddDbContextFactory`
-6. Register REST parsers: `builder.Services.RegisterRestParser<T>()`
-7. Update controllers to inject services instead of `DbContext`
+- **`AlwaysIncludeChildren`**: include paths are discovered by reflection as every property whose type is generic. This also picks up `Nullable<T>` properties — including `BaseModel.LastUpdated` — so enabling it causes EF Core to throw when the query runs. It also misses non-collection reference navigations, and it never applies to `GetById`. Prefer overriding `GetAll()` with explicit `.Include(...)` calls.
+- **One `DbContext` per repository** — see [Unit of Work](#unit-of-work). The context is not disposed by the repository.
+- **`AddBatch` batch sizes** are approximate: the first commit happens after `batchSize + 2` entities and subsequent ones every `batchSize + 1`.
+- **`Delete(where)` always returns `true`**, so it cannot be used to detect "not found".
 
 ---
 
@@ -840,365 +812,24 @@ public class ProductsController : ControllerBase
 
 | Issue | Cause | Fix |
 |-------|-------|-----|
-| `DbContext has been disposed` | Lifecycle mismatch | Use `AddDbContextFactory<T>` not `AddDbContext<T>` |
-| REST parser not found in DI | Parser not registered | Add `builder.Services.RegisterRestParser<T>()` |
-| Navigation properties are null | Includes not enabled | Set `repository.AlwaysIncludeChildren = true` or override `GetAll()` |
-| Audit fields always null | No auditor injected | Implement `BaseAuditor` and register it as `IAuditor` |
-| Pagination not returned | Missing `$page`/`$pagesize` | Include `$page=1&$pagesize=20` in the query string |
+| `Unable to resolve service for type IDbContextFactory<...>` | Context registered with `AddDbContext` | Use `AddDbContextFactory<T>` |
+| `Unable to resolve service for type IRestToLinqParser<T>` | Parser not registered | `builder.Services.RegisterRestParser<T>()` |
+| `Unable to resolve service for type IRepositoryWithIntId<...>` | Service constructor asks for the generic interface but only `IProductRepository` is registered | Take `IProductRepository` in the service constructor, or register the generic interface too |
+| Changes made with `commit: false` never saved | `SaveChanges` called on a different context | Call `Commit()` on the same repository |
+| Navigation properties are null | Includes not applied | Override `GetAll()` with explicit `Include`s (see Known Limitations) |
+| `CreatedBy` / `LastUpdatedBy` always null | Not populated by the base classes | Override `Add` / `Update` (see [Auditing](#auditing)) |
+| `LastUpdated` not changing on update | `Update` doesn't set it | Override `Update` |
+| `Pagination` is null | No `$pagesize` in the query | Include `$page=1&$pagesize=20` |
 | `ArgumentException` on query | Query too long or too many conditions | Max 2000 chars, max 50 conditions |
 
 ---
 
 ## Additional Resources
 
-- **REST-Parser Usage Guide**: [Docs/Rest-Parser-Usage.md](Docs/Rest-Parser-Usage.md)
-- **GitHub Repository**: https://github.com/BigBadJock/SilverCodeAPI
-- **NuGet Packages**:
-  - https://www.nuget.org/packages/Core.Common.Contracts/
-  - https://www.nuget.org/packages/Core.Common.DataModels/
-  - https://www.nuget.org/packages/Core.Common/
-
----
-
-**Target Framework**: .NET 10 | **Author**: John McArthur | **License**: MIT
-
-
-A set of .NET 10 NuGet packages providing interfaces and abstract base classes for building API services using the **Repository Pattern** and **Unit of Work**. Includes built-in support for [REST-Parser](https://github.com/BigBadJock/REST-Parser), enabling fully featured URL-driven search, filtering, sorting, and pagination out of the box.
-
----
-
-## Packages
-
-| Package | Description |
-|---------|-------------|
-| `Core.Common` | Abstract base implementations for repositories and data services |
-| `Core.Common.Contracts` | Interfaces and contracts |
-| `Core.Common.DataModels` | Base data models and entity definitions |
-
----
-
-## Installation
-
-### NuGet Package Manager
-```bash
-Install-Package Core.Common
-Install-Package Core.Common.Contracts
-Install-Package Core.Common.DataModels
-```
-
-### .NET CLI
-```bash
-dotnet add package Core.Common
-dotnet add package Core.Common.Contracts
-dotnet add package Core.Common.DataModels
-```
-
-### GitHub Packages
-
-1. Get a personal access token from **GitHub → Settings → Developer Settings → Personal Access Tokens**
-2. Run: `nuget setApiKey <accesstoken> -source github`
-3. Add a `nuget.config` file to your project root (add `nuget.config` to `.gitignore` — it contains your token):
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<configuration>
-  <packageSources>
-    <clear />
-    <add key="nuget.org" value="https://api.nuget.org/v3/index.json"/>
-    <add key="github" value="https://nuget.pkg.github.com/bigbadjock/index.json"/>
-  </packageSources>
-  <packageSourceCredentials>
-    <github>
-      <add key="UserName" value="bigbadjock"/>
-      <add key="ClearTextPassword" value="<accessToken>"/>
-    </github>
-  </packageSourceCredentials>
-</configuration>
-```
-
----
-
-## Quick Start
-
-### 1. Define Your Entity
-
-Inherit from one of the base model classes matching your ID type:
-
-```csharp
-// Integer ID
-public class Product : BaseModelWithIntId
-{
-    public string Name { get; set; }
-    public string Category { get; set; }
-    public decimal Price { get; set; }
-    public bool IsActive { get; set; }
-}
-
-// GUID ID
-public class Order : BaseModelWithGuidId { ... }
-
-// String ID
-public class Tag : BaseModelWithStringId { ... }
-```
-
-All base models include built-in audit fields:
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `Id` | int / Guid / string | Primary key |
-| `Created` | `DateTime` | UTC timestamp set on creation |
-| `CreatedBy` | `string?` | User who created the record |
-| `LastUpdated` | `DateTime?` | UTC timestamp of last update |
-| `LastUpdatedBy` | `string?` | User who last updated the record |
-| `IsDeleted` | `bool` | Soft-delete flag |
-
-### 2. Create a Repository
-
-```csharp
-public class ProductRepository : BaseRepositoryWithIntId<AppDbContext, Product>, IProductRepository
-{
-    public ProductRepository(
-        IDbContextFactory<AppDbContext> dbContextFactory,
-        IRestToLinqParser<Product> parser,
-        ILogger<IRepository<AppDbContext, Product>> logger)
-        : base(dbContextFactory, parser, logger)
-    {
-    }
-}
-```
-
-### 3. Create a Data Service
-
-```csharp
-public class ProductService : BaseDataServiceWithIntId<AppDbContext, Product>, IProductService
-{
-    public ProductService(
-        IRepositoryWithIntId<AppDbContext, Product> repository,
-        ILogger<IDataServiceWithIntId<AppDbContext, Product>> logger)
-        : base(repository, logger)
-    {
-    }
-}
-```
-
-### 4. Register Dependencies
-
-```csharp
-// Program.cs
-builder.Services.AddDbContextFactory<AppDbContext>(options =>
-    options.UseSqlServer(connectionString));
-
-builder.Services.RegisterRestParser<Product>();
-
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<IProductService, ProductService>();
-```
-
-### 5. Use in a Controller
-
-```csharp
-[ApiController]
-[Route("api/[controller]")]
-public class ProductsController : ControllerBase
-{
-    private readonly IProductService _service;
-
-    public ProductsController(IProductService service)
-    {
-        _service = service;
-    }
-
-    [HttpGet]
-    public IActionResult Get([FromQuery] string q = "$sort_by=Id&$page=1&$pagesize=20")
-    {
-        var result = _service.Search(q);
-        return Ok(result);
-    }
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
-    {
-        var product = await _service.GetById(id);
-        return product is null ? NotFound() : Ok(product);
-    }
-}
-```
-
----
-
-## REST Query Syntax
-
-The built-in REST-Parser lets API consumers filter, sort, and paginate results directly via URL query strings — no extra endpoint logic required.
-
-### Basic Format
-
-```
-GET /api/products?field[operator]=value&field2=value2
-```
-
-### Quick Examples
-
-```http
-# Filter by category and price
-GET /api/products?category=Electronics&price[lt]=1000
-
-# Sort descending, paginate
-GET /api/products?$sort_by=price[DESC]&$page=1&$pagesize=20
-
-# Combined: filter + multi-sort + paginate
-GET /api/products?category=Electronics&isActive=true&$sort_by=brand[ASC]&$sort_by=price[ASC]&$page=1&$pagesize=10
-
-# Date range
-GET /api/products?releaseDate[ge]=2023-01-01&releaseDate[le]=2023-12-31
-```
-
-### Filtering Operators
-
-| Operator | Description | Supported Types |
-|----------|-------------|-----------------|
-| `eq` | Equal to *(default)* | All types |
-| `ne` | Not equal to | All types |
-| `gt` | Greater than | int, double, decimal, DateTime |
-| `ge` | Greater than or equal | int, double, decimal, DateTime |
-| `lt` | Less than | int, double, decimal, DateTime |
-| `le` | Less than or equal | int, double, decimal, DateTime |
-| `contains` | Contains substring *(case-sensitive)* | string |
-
-### Supported Field Types
-
-`string` · `int` / `int?` · `double` / `double?` · `decimal` / `decimal?` · `DateTime` / `DateTime?` · `bool` / `bool?` · `Guid` / `Guid?`
-
-### Sorting
-
-```
-$sort_by=field[ASC]    # ascending
-$sort_by=field[DESC]   # descending
-
-# Multiple sorts
-$sort_by=category[ASC]&$sort_by=price[DESC]
-```
-
-If no `$sort_by` is provided, results default to `Id ASC`.
-
-### Pagination
-
-```
-$page=2&$pagesize=25
-```
-
-| Limit | Default | Maximum |
-|-------|---------|---------|
-| Page size | 25 | 1000 |
-| Conditions | — | 50 |
-| Query length | — | 2000 chars |
-
-### Pagination Response (`ApiResult<T>`)
-
-```json
-{
-  "data": [ ... ],
-  "pagination": {
-    "pageNumber": 1,
-    "pageSize": 20,
-    "pageCount": 5,
-    "totalCount": 98
-  }
-}
-```
-
----
-
-## Exception Handling
-
-The REST-Parser throws typed exceptions you can map to HTTP responses:
-
-```csharp
-try
-{
-    var result = _service.Search(q);
-    return Ok(result);
-}
-catch (REST_InvalidFieldnameException ex)
-{
-    return BadRequest(new { error = "Invalid field name", message = ex.Message });
-}
-catch (REST_InvalidOperatorException ex)
-{
-    return BadRequest(new { error = "Invalid operator", message = ex.Message });
-}
-catch (REST_InvalidValueException ex)
-{
-    return BadRequest(new { error = "Invalid value", message = ex.Message });
-}
-catch (ArgumentException ex)
-{
-    // Query too long, too many conditions, or invalid format
-    return BadRequest(new { error = "Invalid query", message = ex.Message });
-}
-```
-
----
-
-## Architecture
-
-```
-Core.Common.Contracts          Core.Common                    Core.Common.DataModels
-─────────────────────          ────────────────               ──────────────────────
-IReadRepository<DBC,T>    ←─   BaseReadRepository             BaseModel
-IRepository<DBC,T>        ←─   BaseRepository                 BaseModelWithIntId
-IRepositoryWithIntId      ←─   BaseRepositoryWithIntId        BaseModelWithGuidId
-IRepositoryWithGuidId     ←─   BaseRepositoryWithGuidId       BaseModelWithStringId
-IRepositoryWithStringId   ←─   BaseRepositoryWithStringId     BaseLookupModel
-
-IDataService<DBC,T>       ←─   BaseDataService
-IDataServiceWithIntId     ←─   BaseDataServiceWithIntId       Credentials
-IDataServiceWithGuidId    ←─   BaseDataServiceWithGuidId      RefreshTokenCredentials
-IDataServiceWithStringId  ←─   BaseDataServiceWithStringId    JWTSettings
-                                                               ApiResult<T>
-IUnitOfWork                                                    Pagination
-IAuditor              ←─       BaseAuditor
-IBaseTokenService
-```
-
----
-
-## Available Base Classes
-
-### Repositories
-
-| Class | ID Type | Use When |
-|-------|---------|----------|
-| `BaseRepositoryWithIntId<DBC,T>` | `int` | Standard auto-increment PK |
-| `BaseRepositoryWithGuidId<DBC,T>` | `Guid` | Distributed / globally unique PK |
-| `BaseRepositoryWithStringId<DBC,T>` | `string` | Natural or user-defined PK |
-| `BaseReadRepositoryWithIntId<DBC,T>` | `int` | Read-only repository |
-| `BaseReadRepositoryWithGuidId<DBC,T>` | `Guid` | Read-only repository |
-| `BaseReadRepositoryWithStringId<DBC,T>` | `string` | Read-only repository |
-
-All repositories expose:
-- `GetAll()` — returns `IQueryable<T>`
-- `GetAll(string restQuery)` — returns filtered/sorted/paged `ApiResult<T>`
-- `GetById(id)` — returns `T?`
-- `Add(T entity)` · `Update(T entity)` · `Delete(...)` · `AddBatch(...)` · `Commit()`
-
-### Data Services
-
-| Class | ID Type |
-|-------|---------|
-| `BaseDataServiceWithIntId<DBC,T>` | `int` |
-| `BaseDataServiceWithGuidId<DBC,T>` | `Guid` |
-| `BaseDataServiceWithStringId<DBC,T>` | `string` |
-
----
-
-## Security & Limits
-
-- Query strings are validated against length (2000 chars) and condition count (50) limits — `ArgumentException` is thrown if exceeded
-- `JWTSettings.SecretKey` is enforced to a minimum of 32 characters (256-bit) at the model validation level
-- Entity data is never serialised into log output to prevent PII leakage
-- All timestamps are stored in UTC
-
----
+- [Docs/SilverCodeAPI-Usage-Guide.md](Docs/SilverCodeAPI-Usage-Guide.md) — extended usage guide
+- [Docs/Rest-Parser-Usage.md](Docs/Rest-Parser-Usage.md) — REST-Parser query syntax
+- [REST-Parser on GitHub](https://github.com/BigBadJock/REST-Parser) · [REST-Parser on NuGet](https://www.nuget.org/packages/REST-Parser)
+- [SilverCodeAPI GitHub Packages](https://github.com/BigBadJock/SilverCodeAPI/packages)
 
 ## Contributing
 
@@ -1206,8 +837,4 @@ Pull requests are welcome. Please open an issue first to discuss significant cha
 
 ---
 
-## Links
-
-- [REST-Parser GitHub](https://github.com/BigBadJock/REST-Parser)
-- [REST-Parser NuGet](https://www.nuget.org/packages/REST-Parser)
-- [SilverCodeAPI GitHub Packages](https://github.com/BigBadJock/SilverCodeAPI/packages)
+**Target Framework**: .NET 10 | **Author**: John McArthur
