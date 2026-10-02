@@ -44,7 +44,6 @@
       1.0.6 - Added Core.Common.DataModels, and RefreshToken etc
       1.0.5 - Added BaseDataService and IDataService Bumped version
     </PackageReleaseNotes>
-   <IncrementVersionOnBuild>2.yyyy.Mdd.Hmm</IncrementVersionOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

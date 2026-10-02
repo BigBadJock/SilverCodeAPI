@@ -14,7 +14,6 @@
     <Authors>John McArthur</Authors>
     <Company>John McArthur</Company>
     <Copyright>2026</Copyright>
-    <Version>2.0.0</Version>
     <PackageReleaseNotes>
       2.0.0 - Update REST-Parser to 2.0.0. AlwaysIncludeChildren uses EF Core navigations. Update sets LastUpdated and preserves Created/CreatedBy. Fix AddBatch batch sizes, progress optional. Delete(where) returns false when nothing matched. Repositories dispose their DbContext. Remove unused Newtonsoft.Json and System.IdentityModel.Tokens.Jwt references
       1.2.6 - Removed some old code
@@ -67,7 +66,6 @@
     <RepositoryUrl>https://github.com/BigBadJock/SilverCodeAPI</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>API, Base Classes</PackageTags>
-    <IncrementVersionOnBuild>2.yyyy.Mdd.Hmm</IncrementVersionOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

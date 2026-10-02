@@ -29,6 +29,10 @@ jobs:
       with:
         dotnet-version: ${{ env.NETCORE_VERSION }}
 
+    # One timestamp for the whole run so every package gets the same Major.yyyy.Mdd.Hmm version (see Directory.Build.props)
+    - name: Set build timestamp
+      run: echo "BuildTimestamp=$(date -u +%Y%m%d%H%M)" >> "$GITHUB_ENV"
+
     - name: Restore
       run: dotnet restore ./SilverCodeAPI.sln
 

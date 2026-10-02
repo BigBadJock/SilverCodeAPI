@@ -1,0 +1,16 @@
+<Project>
+
+  <!--
+    Package/assembly version: Major.yyyy.Mdd.Hmm (UTC), e.g. 2.2026.1002.2315
+    Replaces the IncrementVersionOnBuild Visual Studio extension so CI and command-line builds get the same scheme.
+    - Bump VersionMajor for breaking changes.
+    - Set BuildTimestamp (yyyyMMddHHmm) to stamp several builds/packs with the same version (the CI workflow does this).
+    - An explicit -p:Version=... still wins.
+  -->
+  <PropertyGroup>
+    <VersionMajor Condition="'$(VersionMajor)' == ''">2</VersionMajor>
+    <BuildTimestamp Condition="'$(BuildTimestamp)' == ''">$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmm"))</BuildTimestamp>
+    <Version Condition="'$(Version)' == ''">$(VersionMajor).$(BuildTimestamp.Substring(0, 4)).$([System.Int32]::Parse($(BuildTimestamp.Substring(4, 4)))).$([System.Int32]::Parse($(BuildTimestamp.Substring(8, 4))))</Version>
+  </PropertyGroup>
+
+</Project>
