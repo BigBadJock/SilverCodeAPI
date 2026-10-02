@@ -251,7 +251,7 @@ public class ProductsController : ControllerBase
         _productService = productService;
     }
 
-    // GET api/products?q=category=Electronics%26price[lt]=1000%26$sort_by=price[ASC]%26$page=1%26$pagesize=20
+    // GET api/products?q=category=Electronics%26price[lt]=1000%26$sort_by[asc]=price%26$page=1%26$pagesize=20
     [HttpGet]
     public IActionResult Search([FromQuery] string? q)
     {
@@ -288,7 +288,7 @@ public class ProductsController : ControllerBase
 }
 ```
 
-> Tip: to accept the REST query as the raw request query string instead of a `q` parameter, pass `Request.QueryString.Value?.TrimStart('?')` to `Search`.
+> Tip: to accept the REST query as the raw request query string instead of a `q` parameter (e.g. `GET api/products?category=Electronics&$sort_by[desc]=price`), pass `WebUtility.UrlDecode(Request.QueryString.Value?.TrimStart('?') ?? "")` to `Search`. REST-Parser does not URL-decode its input.
 
 ---
 
@@ -620,8 +620,13 @@ if (!settings.IsValid(out var errors))
 ### Basic format
 
 ```
-field[operator]=value&field2=value2&$sort_by=field[ASC]&$page=1&$pagesize=20
+field[operator]=value&field2=value2&$sort_by[asc]=field&$page=1&$pagesize=20
 ```
+
+- Parts joined with `&` are combined with **AND**; alternatives joined with `|` within a part are combined with **OR** — `status=Active|status=Pending&price[lt]=100` means `(status == Active || status == Pending) && price < 100`. Parentheses and nesting are not supported.
+- Field names, `$sort_by` / `$page` / `$pagesize` and the `asc`/`desc` direction are case-insensitive. Filter operators must be **lowercase** (`price[GT]=10` throws).
+- REST-Parser does **not** URL-decode its input — decode the query string before passing it in (see the tip under [Use in a controller](#6-use-in-a-controller)). Clients should send `|` as `%7C`.
+- Values cannot contain `&` or `|`, and `[in]` values cannot contain `,`.
 
 ### Examples
 
@@ -630,42 +635,62 @@ field[operator]=value&field2=value2&$sort_by=field[ASC]&$page=1&$pagesize=20
 category=Electronics&price[lt]=1000
 
 # Sort descending with pagination
-$sort_by=price[DESC]&$page=1&$pagesize=20
+$sort_by[desc]=price&$page=1&$pagesize=20
 
 # Contains search
-name[contains]=Pro&$sort_by=price[DESC]
+name[contains]=Pro&$sort_by[desc]=price
 
 # Date range
 releaseDate[ge]=2023-01-01&releaseDate[le]=2023-12-31
 
-# Multiple sorts
-category=Electronics&$sort_by=brand[ASC]&$sort_by=price[ASC]&$page=1&$pagesize=10
+# OR across fields, and the [in] shorthand for one field
+name[contains]=phone|category=Mobile
+status[in]=Active,Pending
+
+# Multiple sorts, applied in order
+category=Electronics&$sort_by[asc]=brand&$sort_by[desc]=price&$page=1&$pagesize=10
 ```
 
 ### Filtering operators
 
 | Operator | Description | Supported types |
 |----------|-------------|-----------------|
-| `eq` | Equal to *(default)* | All types |
-| `ne` | Not equal to | All types |
-| `gt` | Greater than | int, double, decimal, DateTime |
-| `ge` | Greater than or equal | int, double, decimal, DateTime |
-| `lt` | Less than | int, double, decimal, DateTime |
-| `le` | Less than or equal | int, double, decimal, DateTime |
-| `contains` | Contains substring *(case-sensitive)* | string |
+| `eq` | Equal to *(default)* | All supported types |
+| `ne` | Not equal to | All supported types |
+| `gt` | Greater than | All except `string`, `bool`, `Guid` |
+| `ge` | Greater than or equal | All except `string`, `bool`, `Guid` |
+| `lt` | Less than | All except `string`, `bool`, `Guid` |
+| `le` | Less than or equal | All except `string`, `bool`, `Guid` |
+| `contains` | Contains substring | `string` |
+| `in` | Equal to any value in a comma-separated list | All supported types |
 
-Supported field types: `string`, `int`, `double`, `decimal`, `DateTime`, `bool`, `Guid` and their nullable forms.
+Supported field types (and their nullable forms): `string`, `bool`, `Guid`, `int`, `long`, `short`, `byte`, `sbyte`, `uint`, `ulong`, `ushort`, `float`, `double`, `decimal`, `DateTime`, `DateTimeOffset`, `DateOnly`, `TimeOnly`, `TimeSpan` and enums (by member name, case-insensitive, or by underlying number). Filtering on any other type, such as a navigation property, throws `REST_InvalidFieldnameException`; sorting works on any property.
+
+String `eq` and `contains` follow the query provider: case-sensitive in memory, collation-dependent in the database. `DateTimeOffset` values without an offset are treated as UTC.
+
+### Sorting
+
+```
+$sort_by=name            # ascending
+$sort_by[asc]=name       # ascending
+$sort_by[desc]=price     # descending
+```
+
+If no `$sort_by` is supplied, results are sorted by `Id` ascending.
 
 ### Pagination and limits
 
+- `$page` is one-based; a page past the end is moved to the last page.
+- `$page` without `$pagesize` uses a page size of 25; `$pagesize` without `$page` uses page 1.
+- With neither, results are not paginated.
+
 | Limit | Value |
 |-------|-------|
-| Default page size (when `$pagesize` has no value) | 25 |
 | Max page size | 1000 |
-| Max filter conditions | 50 |
+| Max conditions (each `&` part, `\|` alternative and `[in]` value counts) | 50 |
 | Max query length | 2000 chars |
 
-`ApiResult<T>.Pagination` is only populated when the result has a page size, i.e. when `$pagesize` was supplied. Serialised, a paged result looks like:
+`ApiResult<T>.Pagination` is only populated when the query is paginated (`$page` and/or `$pagesize` supplied). Serialised, a paged result looks like:
 
 ```json
 {
@@ -695,7 +720,7 @@ catch (REST_InvalidValueException ex)
 }
 catch (ArgumentException ex)
 {
-    // Query too long, too many conditions, or bad format
+    // Query too long, too many conditions, a part with no '=', or an empty '|' alternative
     return BadRequest(new { error = "Invalid query", message = ex.Message });
 }
 ```
@@ -819,8 +844,10 @@ modelBuilder.Entity<Product>().HasQueryFilter(p => !p.IsDeleted);
 | Navigation properties are null | Includes not applied | Override `GetAll()` with explicit `Include`s (see Known Limitations) |
 | `CreatedBy` / `LastUpdatedBy` always null | Not populated by the base classes | Override `Add` / `Update` (see [Auditing](#auditing)) |
 | `LastUpdated` not changing on update | `Update` doesn't set it | Override `Update` |
-| `Pagination` is null | No `$pagesize` in the query | Include `$page=1&$pagesize=20` |
-| `ArgumentException` on query | Query too long or too many conditions | Max 2000 chars, max 50 conditions |
+| `Pagination` is null | No `$page` / `$pagesize` in the query | Include `$page=1&$pagesize=20` |
+| `ArgumentException` on query | Query too long, too many conditions, or a part with no `=` | Max 2000 chars, max 50 conditions |
+| `REST_InvalidFieldnameException` for `price[DESC]` | Wrong sort syntax | Use `$sort_by[desc]=price` |
+| `REST_InvalidOperatorException` | Operator not lowercase, or not valid for the field type | `price[gt]=10`, not `price[GT]=10` |
 
 ---
 
