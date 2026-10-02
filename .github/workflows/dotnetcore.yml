@@ -5,10 +5,16 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
-    
+
 env:
   NETCORE_VERSION: '10.0.x'
-  PRIVATE_NUGET_PATH: 'https://nuget.pkg.github.com/bigbadjock/index.json'
+  # Credentials for the bigbadjock-github source in nuget.config (REST-Parser is only published there)
+  GITHUB_PACKAGES_USER: ${{ github.repository_owner }}
+  GITHUB_PACKAGES_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+permissions:
+  contents: read
+  packages: write
 
 jobs:
   build:
@@ -16,55 +22,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    
-    - name: Setup .NET Core  ${{ env.NETCORE_VERSION }}
-      uses: actions/setup-dotnet@v1
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET ${{ env.NETCORE_VERSION }}
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.NETCORE_VERSION }}
 
-    - name: Create NuGet config for GitHub Packages
-      run: |
-        cat <<EOF > ./nuget.config
-        <?xml version="1.0" encoding="utf-8"?>
-        <configuration>
-          <packageSources>
-            <clear />
-            <add key="nuget.org" value="https://api.nuget.org/v3/index.json" protocolVersion="3" />
-            <add key="bigbadjock-github" value="https://nuget.pkg.github.com/bigbadjock/index.json" />
-          </packageSources>
-          <packageSourceCredentials>
-            <bigbadjock-github>
-              <add key="Username" value="bigbadjock" />
-              <add key="ClearTextPassword" value="${{ secrets.NUGET_TOKEN }}" />
-            </bigbadjock-github>
-          </packageSourceCredentials>
-        </configuration>
-        EOF
-
-        
     - name: Restore
       run: dotnet restore ./SilverCodeAPI.sln
-      
+
     - name: Build
       run: dotnet build ./SilverCodeAPI.sln --configuration Release --no-restore
-      
+
     - name: Test
       run: dotnet test --solution ./SilverCodeAPI.sln --configuration Release --no-build
 
     - name: Pack
       run: dotnet pack ./SilverCodeAPI.sln --configuration Release -o finalpackage --no-build
-      
+
     - name: Publish
-      uses: actions/upload-artifact@v4.0.0
-      with: 
-        name: REST-Parser
+      uses: actions/upload-artifact@v4
+      with:
+        name: SilverCodeAPI
         path: finalpackage
-        
+
     - name: Push Nupkg to GitHub Packages
+      if: github.event_name == 'push'
       uses: tanaka-takayoshi/nuget-publish-to-github-packages-action@v2.1
       with:
         nupkg-path: './finalpackage/*.nupkg'
-        repo-owner: bigbadjock 
+        repo-owner: bigbadjock
         gh-user: bigbadjock
-        token: ${{secrets.GITHUB_TOKEN}}
+        token: ${{ secrets.GITHUB_TOKEN }}

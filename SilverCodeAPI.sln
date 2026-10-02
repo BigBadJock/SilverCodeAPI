@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.Common.Contracts", "Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.Common", "Core.Common\Core.Common.csproj", "{B92837CB-3506-4D3B-94A9-863EF6E1AC0E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1.Core", "1.Core", "{A6A72E93-AE25-4804-9204-D2705C8FD805}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1. Core", "1. Core", "{A6A72E93-AE25-4804-9204-D2705C8FD805}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.Common.DataModels", "Core.Common.DataModels\Core.Common.DataModels.csproj", "{361E760B-C536-4D8C-8234-ED2B53311091}"
 EndProject
@@ -15,7 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
-		.github\workflows\dotnetcore.yml = .github\workflows\dotnetcore.yml
+		global.json = global.json
 		nuget.config = nuget.config
 		README.md = README.md
 	EndProjectSection
@@ -26,7 +26,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{E66DFF0B-8
 		Docs\SilverCodeAPI-Usage-Guide.md = Docs\SilverCodeAPI-Usage-Guide.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{3F1D8E2A-6C4B-4E7A-9B5D-2A8C1E7F4D61}"
+	ProjectSection(SolutionItems) = preProject
+		.github\copilot-instructions.md = .github\copilot-instructions.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{8B2E4C7D-1A5F-4D3E-A6B9-C0E2F4D8A173}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\dotnetcore.yml = .github\workflows\dotnetcore.yml
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Common.Tests", "Core.Common.Tests\Core.Common.Tests.csproj", "{1130D98E-5A89-484B-8248-EA5046977FE5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2. Tests", "2. Tests", "{F401C6F0-FC5F-4BF9-A28E-165407F4609D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -94,6 +106,8 @@ Global
 		{7659748C-F934-4C6D-B13E-D171D1363FB0} = {A6A72E93-AE25-4804-9204-D2705C8FD805}
 		{B92837CB-3506-4D3B-94A9-863EF6E1AC0E} = {A6A72E93-AE25-4804-9204-D2705C8FD805}
 		{361E760B-C536-4D8C-8234-ED2B53311091} = {A6A72E93-AE25-4804-9204-D2705C8FD805}
+		{8B2E4C7D-1A5F-4D3E-A6B9-C0E2F4D8A173} = {3F1D8E2A-6C4B-4E7A-9B5D-2A8C1E7F4D61}
+		{1130D98E-5A89-484B-8248-EA5046977FE5} = {F401C6F0-FC5F-4BF9-A28E-165407F4609D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {33267F25-B2A2-4413-A2A7-4F8B7C78CEBA}
