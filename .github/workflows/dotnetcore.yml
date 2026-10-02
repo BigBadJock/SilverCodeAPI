@@ -49,6 +49,9 @@ jobs:
     - name: Build
       run: dotnet build ./SilverCodeAPI.sln --configuration Release --no-restore
       
+    - name: Test
+      run: dotnet test --solution ./SilverCodeAPI.sln --configuration Release --no-build
+
     - name: Pack
       run: dotnet pack ./SilverCodeAPI.sln --configuration Release -o finalpackage --no-build
       

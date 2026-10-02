@@ -19,7 +19,7 @@
     <RepositoryUrl>https://github.com/BigBadJock/SilverCodeAPI</RepositoryUrl>
     <RepositoryType>https://github.com/BigBadJock/SilverCodeAPI</RepositoryType>
     <PackageTags>API, Interfaces</PackageTags>
-    <Version>1.2026.506.2224</Version>
+    <Version>1.2026.1002.2301</Version>
     <PackageReleaseNotes>
       2.0.0 - Update REST-Parser to 2.0.0. IRepository.AddBatch progress is optional. Add GetAll() to IDataService
       1.2.6 - Removed some old code

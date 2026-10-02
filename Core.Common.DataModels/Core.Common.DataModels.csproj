@@ -11,7 +11,7 @@
     <RepositoryUrl>https://github.com/BigBadJock/SilverCodeAPI</RepositoryUrl>
     <PackageTags>API, DataModels, Base Classes</PackageTags>
     <Copyright>2025</Copyright>
-    <Version>1.2026.506.2224</Version>
+    <Version>2.2026.1002.2301</Version>
     <PackageReleaseNotes>
       2.0.0 - IModelWithGuidId and IModelWithStringId extend IModel
       1.2.6 - removed some old code

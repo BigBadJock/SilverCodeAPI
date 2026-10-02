@@ -14,7 +14,7 @@
     <Authors>John McArthur</Authors>
     <Company>John McArthur</Company>
     <Copyright>2025</Copyright>
-    <Version>1.2026.506.2224</Version>
+    <Version>1.2026.1002.2301</Version>
     <PackageReleaseNotes>
       2.0.0 - Update REST-Parser to 2.0.0. AlwaysIncludeChildren uses EF Core navigations. Update sets LastUpdated and preserves Created/CreatedBy. Fix AddBatch batch sizes, progress optional. Delete(where) returns false when nothing matched. Repositories dispose their DbContext. Remove unused Newtonsoft.Json and System.IdentityModel.Tokens.Jwt references
       1.2.6 - Removed some old code
